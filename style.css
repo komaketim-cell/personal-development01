@@ -1,120 +1,176 @@
 :root {
-  --primary: #ff8c1a;
-  --primary-soft: #fff3e6;
-  --bg-main: #f6f7fb;
-  --card-bot: #ffffff;
-  --card-user: #ffedd5;
-  --text-main: #1f2937;
-  --shadow-soft: 0 12px 30px rgba(0,0,0,0.08);
+  --orange1: #ff8c1a;
+  --orange2: #ffb703;
 }
 
+/* ---------- THEMES ---------- */
+body.light {
+  --bg: #fff7ed;
+  --card: #fff;
+  --text: #1f2937;
+  --muted: #6b7280;
+}
+
+body.dark {
+  --bg: #0f172a;
+  --card: #1e293b;
+  --text: #f8fafc;
+  --muted: #cbd5f5;
+}
+
+/* ---------- BASE ---------- */
 body {
   margin: 0;
-  background: linear-gradient(135deg, #fff7ed, #fef3c7);
+  background: var(--bg);
+  font-family: "Vazirmatn", system-ui, sans-serif;
   display: flex;
   justify-content: center;
-  padding: 40px 10px;
-  font-family: "Vazirmatn", system-ui, sans-serif;
-  color: var(--text-main);
+  padding: 40px 12px;
+  transition: 0.3s;
 }
 
-#chat-container {
+#app {
   width: 420px;
-  background: var(--bg-main);
-  border-radius: 22px;
-  box-shadow: var(--shadow-soft);
-  display: flex;
-  flex-direction: column;
+  background: var(--card);
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
   overflow: hidden;
 }
 
+/* ---------- HEADER ---------- */
 #header {
-  background: linear-gradient(135deg, #ff8c1a, #ffb703);
-  color: white;
+  padding: 16px;
   text-align: center;
-  padding: 18px;
   font-weight: bold;
+  color: white;
+  background: linear-gradient(135deg, var(--orange1), var(--orange2));
+  position: relative;
+}
+
+#themeToggle {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  border: none;
+  background: rgba(255,255,255,0.25);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+}
+
+/* ---------- CARDS ---------- */
+#card-area {
+  padding: 28px 20px;
+  min-height: 280px;
+}
+
+.question-card {
+  background: linear-gradient(135deg, #fff7ed, #ffedd5);
+  border-radius: 20px;
+  padding: 22px;
+  color: #1f2937;
+  box-shadow: 0 15px 35px rgba(255,140,26,0.35);
+  animation: cardIn 0.5s ease;
+}
+
+body.dark .question-card {
+  background: linear-gradient(135deg, #1e293b, #334155);
+  color: #f8fafc;
+}
+
+.question-number {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-bottom: 6px;
+}
+
+.question-text {
   font-size: 16px;
-}
-
-#chat {
-  padding: 20px;
-  height: 460px;
-  overflow-y: auto;
-}
-
-.chat-cards > div {
-  animation: fadeUp 0.4s ease;
-}
-
-.bot,
-.user {
-  max-width: 85%;
-  padding: 14px 16px;
-  border-radius: 16px;
-  margin-bottom: 14px;
-  line-height: 1.8;
-  font-size: 14px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-}
-
-.bot {
-  background: var(--card-bot);
-  border-right: 5px solid var(--primary);
-}
-
-.user {
-  background: var(--card-user);
-  margin-left: auto;
-  border-left: 5px solid var(--primary);
-  text-align: right;
   font-weight: bold;
+  line-height: 1.9;
 }
 
+.card-exit {
+  animation: cardOut 0.4s ease forwards;
+}
+
+/* ---------- INPUT ---------- */
 #input-area {
   display: flex;
   gap: 10px;
-  padding: 14px;
-  background: white;
-  border-top: 1px solid #eee;
+  padding: 16px;
+  border-top: 1px solid rgba(0,0,0,0.1);
 }
 
 #input-area input {
   flex: 1;
   padding: 12px;
-  border-radius: 12px;
-  border: 1px solid #ddd;
-  font-size: 14px;
+  border-radius: 14px;
+  border: none;
   outline: none;
-}
-
-#input-area input:focus {
-  border-color: var(--primary);
 }
 
 #input-area button {
   padding: 12px 20px;
-  border-radius: 12px;
+  border-radius: 14px;
   border: none;
-  background: linear-gradient(135deg, #ff8c1a, #ffb703);
+  background: linear-gradient(135deg, var(--orange1), var(--orange2));
   color: white;
   font-weight: bold;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-#input-area button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(255,140,26,0.4);
+/* ---------- RESULTS ---------- */
+.result-row {
+  margin: 14px 0;
 }
 
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.result-label {
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.progress {
+  height: 10px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(135deg, var(--orange1), var(--orange2));
+  animation: fillBar 1.2s ease forwards;
+}
+
+/* ---------- COACH ---------- */
+.coach-box {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255,140,26,0.12);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+/* ---------- ANIMATIONS ---------- */
+@keyframes fillBar {
+  to { width: var(--value); }
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cardOut {
+  to { opacity: 0; transform: translateY(-20px); }
+}
+
+/* ---------- CONFETTI ---------- */
+#confetti {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
 }
