@@ -1,57 +1,120 @@
+:root {
+  --primary: #ff8c1a;
+  --primary-soft: #fff3e6;
+  --bg-main: #f6f7fb;
+  --card-bot: #ffffff;
+  --card-user: #ffedd5;
+  --text-main: #1f2937;
+  --shadow-soft: 0 12px 30px rgba(0,0,0,0.08);
+}
+
 body {
-  font-family: sans-serif;
-  background: #f4f6f8;
+  margin: 0;
+  background: linear-gradient(135deg, #fff7ed, #fef3c7);
   display: flex;
   justify-content: center;
-  padding-top: 40px;
+  padding: 40px 10px;
+  font-family: "Vazirmatn", system-ui, sans-serif;
+  color: var(--text-main);
 }
 
 #chat-container {
-  width: 400px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  width: 420px;
+  background: var(--bg-main);
+  border-radius: 22px;
+  box-shadow: var(--shadow-soft);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+#header {
+  background: linear-gradient(135deg, #ff8c1a, #ffb703);
+  color: white;
+  text-align: center;
+  padding: 18px;
+  font-weight: bold;
+  font-size: 16px;
 }
 
 #chat {
-  padding: 15px;
-  height: 400px;
+  padding: 20px;
+  height: 460px;
   overflow-y: auto;
-  white-space: pre-line;
+}
+
+.chat-cards > div {
+  animation: fadeUp 0.4s ease;
+}
+
+.bot,
+.user {
+  max-width: 85%;
+  padding: 14px 16px;
+  border-radius: 16px;
+  margin-bottom: 14px;
+  line-height: 1.8;
+  font-size: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
 }
 
 .bot {
-  background: #eef2ff;
-  margin-bottom: 10px;
-  padding: 8px;
-  border-radius: 6px;
+  background: var(--card-bot);
+  border-right: 5px solid var(--primary);
 }
 
 .user {
-  background: #dcfce7;
-  margin-bottom: 10px;
-  padding: 8px;
-  border-radius: 6px;
+  background: var(--card-user);
+  margin-left: auto;
+  border-left: 5px solid var(--primary);
   text-align: right;
+  font-weight: bold;
 }
 
 #input-area {
   display: flex;
-  border-top: 1px solid #ddd;
+  gap: 10px;
+  padding: 14px;
+  background: white;
+  border-top: 1px solid #eee;
 }
 
 #input-area input {
   flex: 1;
-  padding: 10px;
-  border: none;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  outline: none;
+}
+
+#input-area input:focus {
+  border-color: var(--primary);
 }
 
 #input-area button {
-  padding: 10px 15px;
+  padding: 12px 20px;
+  border-radius: 12px;
   border: none;
-  background: #6366f1;
+  background: linear-gradient(135deg, #ff8c1a, #ffb703);
   color: white;
+  font-weight: bold;
   cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#input-area button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255,140,26,0.4);
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
