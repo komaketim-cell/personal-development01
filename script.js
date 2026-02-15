@@ -1,170 +1,138 @@
-/* =====================
-   Global State
-===================== */
-
-let currentQuestion = 0;
-let answers = [];
-let coachState = null;
-
-/* =====================
-   Questions
-===================== */
-
 const questions = [
-  "چقدر ذهنت آرام است؟",
-  "چقدر روی هدفت شفاف هستی؟",
-  "چقدر عادت‌های پایداری داری؟",
-  "چقدر خودت را می‌شناسی؟",
-  "چقدر تمرکز داری؟",
-  "چقدر انگیزه داری؟",
-  "چقدر استمرار داری؟",
-  "چقدر احساس معنا می‌کنی؟",
-  "چقدر استرس داری؟",
-  "چقدر از مسیرت راضی هستی؟"
+  { text: "چقدر احساساتت رو می‌شناسی؟", dimension: "mind" },
+  { text: "چقدر استرس روزانه‌ات رو مدیریت می‌کنی؟", dimension: "mind" },
+  { text: "چقدر ذهنت آرام است؟", dimension: "mind" },
+  { text: "چقدر به خودت مهربانی؟", dimension: "mind" },
+  { text: "چقدر افکارت منفی نیستند؟", dimension: "mind" },
+
+  { text: "چقدر هدفت در زندگی مشخص است؟", dimension: "goal" },
+  { text: "چقدر انگیزه‌ی پایدار داری؟", dimension: "goal" },
+  { text: "چقدر به آینده‌ات امیدوار هستی؟", dimension: "goal" },
+  { text: "چقدر برای هدفت تلاش می‌کنی؟", dimension: "goal" },
+  { text: "چقدر می‌دانی چه می‌خواهی؟", dimension: "goal" },
+
+  { text: "چقدر عادت‌های منظمی داری؟", dimension: "habit" },
+  { text: "چقدر برنامه‌ریزی می‌کنی؟", dimension: "habit" },
+  { text: "چقدر به برنامه‌ات پایبندی؟", dimension: "habit" },
+  { text: "چقدر اهمال‌کاری نداری؟", dimension: "habit" },
+  { text: "چقدر کارهایت را کامل می‌کنی؟", dimension: "habit" },
+
+  { text: "چقدر خودت را می‌شناسی؟", dimension: "self" },
+  { text: "چقدر نقاط قوتت را می‌دانی؟", dimension: "self" },
+  { text: "چقدر نقاط ضعفت را پذیرفتی؟", dimension: "self" },
+  { text: "چقدر با خودت صادقی؟", dimension: "self" },
+  { text: "چقدر از درونت آگاهی داری؟", dimension: "self" }
 ];
 
-/* =====================
-   Elements
-===================== */
+const DIMENSIONS = {
+  mind: { label: "ذهن و احساسات", importance: 1.3 },
+  goal: { label: "هدف و انگیزه", importance: 1.1 },
+  habit: { label: "نظم و عادت‌ها", importance: 1.2 },
+  self: { label: "خودشناسی", importance: 1.0 }
+};
 
-const assessmentSection = document.getElementById("assessment");
-const coachSection = document.getElementById("coach");
-const programSection = document.getElementById("program");
+let current = 0;
+const answers = [];
 
-const questionBox = document.getElementById("question-box");
-const nextBtn = document.getElementById("next-question");
-const progressBar = document.getElementById("progress-bar");
-
-const coachChat = document.getElementById("coach-chat");
-const coachAction = document.getElementById("coach-action");
-const goToProgramBtn = document.getElementById("go-to-program");
-
-const dashboard = document.getElementById("dashboard");
-const programContent = document.getElementById("program-content");
-const dailyCheckBtn = document.getElementById("daily-check");
-
-/* =====================
-   Init
-===================== */
+const cardArea = document.getElementById("card-area");
+const input = document.getElementById("userInput");
+const btn = document.getElementById("sendBtn");
 
 renderQuestion();
 
-/* =====================
-   Assessment
-===================== */
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter") submitAnswer();
+});
+btn.onclick = submitAnswer;
 
 function renderQuestion() {
-  progressBar.style.width = `${(currentQuestion / questions.length) * 100}%`;
-
-  questionBox.innerHTML = `
-    <div>${questions[currentQuestion]}</div>
-    <input type="range" min="1" max="10" value="5" id="answer" />
+  cardArea.innerHTML = `
+    <div class="question-card">
+      <div class="question-number">
+        سؤال ${current + 1} از ${questions.length}
+      </div>
+      <div class="question-text">${questions[current].text}</div>
+    </div>
   `;
 }
 
-nextBtn.addEventListener("click", () => {
-  const val = document.getElementById("answer").value;
-  answers.push(Number(val));
-  currentQuestion++;
+function submitAnswer() {
+  const value = Number(input.value);
+  if (!value || value < 1 || value > 10) return;
 
-  if (currentQuestion < questions.length) {
-    renderQuestion();
-  } else {
-    finishAssessment();
-  }
-});
+  answers.push({ value, dimension: questions[current].dimension });
+  input.value = "";
 
-function finishAssessment() {
-  assessmentSection.classList.add("hidden");
-  coachSection.classList.remove("hidden");
-
-  const avg = answers.reduce((a, b) => a + b, 0) / answers.length;
-  coachState = determineCoachState(avg); // ✅ فیکس اصلی
-
-  startCoach(coachState);
-}
-
-/* =====================
-   Coach
-===================== */
-
-function determineCoachState(score) {
-  if (score < 7) return "STABILIZE";
-  if (score < 8.5) return "BUILD";
-  return "EXECUTE";
-}
-
-function startCoach(state) {
-  coachChat.innerHTML = "";
-
-  const msg =
-    state === "STABILIZE"
-      ? "اول باید ذهنت آروم بشه و خودتو بهتر بشناسی."
-      : state === "BUILD"
-      ? "وقت ساختن روتین و ثباته."
-      : "تو آماده اجرا و تمرکز جدی هستی.";
-
-  addCoachMessage(msg);
+  const card = document.querySelector(".question-card");
+  card.classList.add("card-exit");
 
   setTimeout(() => {
-    coachAction.classList.remove("hidden");
-  }, 600);
+    current++;
+    current < questions.length ? renderQuestion() : showResult();
+  }, 400);
 }
 
-function addCoachMessage(text) {
-  const div = document.createElement("div");
-  div.className = "message coach";
-  div.innerText = text;
-  coachChat.appendChild(div);
+function analyzeAssessment() {
+  const data = {};
+  Object.keys(DIMENSIONS).forEach(k => data[k] = { sum: 0, count: 0 });
+
+  answers.forEach(a => {
+    data[a.dimension].sum += a.value;
+    data[a.dimension].count++;
+  });
+
+  Object.keys(data).forEach(k => {
+    const avg = data[k].sum / data[k].count;
+    data[k].score = Math.round(avg * 10);
+  });
+
+  return data;
 }
 
-/* =====================
-   Program
-===================== */
+function showResult() {
+  const data = analyzeAssessment();
+  launchConfetti();
 
-goToProgramBtn.addEventListener("click", () => {
-  coachSection.classList.add("hidden");
-  programSection.classList.remove("hidden");
+  let html = `<div class="question-card"><strong>🎉 نتیجه ارزیابی</strong><br><br>`;
 
-  renderDashboard();
-  renderProgram();
-});
-
-function renderDashboard() {
-  dashboard.innerHTML = `
-    <div>وضعیت فعلی:</div>
-    <div class="badge ${coachState.toLowerCase()}">${coachState}</div>
-  `;
-}
-
-function renderProgram() {
-  if (coachState === "STABILIZE") {
-    programContent.innerHTML = `
-      <div class="tool">
-        <h3>خودشناسی</h3>
-        <textarea rows="4" style="width:100%"></textarea>
+  Object.keys(data).forEach(k => {
+    html += `
+      <div class="result-row">
+        <div class="result-label">${DIMENSIONS[k].label} – ${data[k].score}%</div>
+        <div class="progress">
+          <div class="progress-fill" style="--value:${data[k].score}%"></div>
+        </div>
       </div>
     `;
-  }
+  });
 
-  if (coachState === "BUILD") {
-    programContent.innerHTML = `
-      <div class="tool">
-        <label><input type="checkbox"> کار مهم</label><br/>
-        <label><input type="checkbox"> مراقبت ذهن</label>
-      </div>
-    `;
-  }
-
-  if (coachState === "EXECUTE") {
-    programContent.innerHTML = `
-      <div class="tool">
-        <input type="text" placeholder="کار کلیدی امروز" style="width:100%" />
-      </div>
-    `;
-  }
+  html += `</div>`;
+  cardArea.innerHTML = html;
 }
 
-dailyCheckBtn.addEventListener("click", () => {
-  alert("چک‌این ثبت شد ✅");
-});
+/* ✅ Confetti Effect */
+function launchConfetti() {
+  const canvas = document.getElementById("confetti");
+  const ctx = canvas.getContext("2d");
+  canvas.width = innerWidth;
+  canvas.height = innerHeight;
+
+  const pieces = Array.from({ length: 120 }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * -canvas.height,
+    r: Math.random() * 6 + 4,
+    s: Math.random() * 4 + 2
+  }));
+
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y += p.s, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `hsl(${Math.random()*40+20},100%,60%)`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
