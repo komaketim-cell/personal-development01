@@ -1,154 +1,192 @@
 // ===============================
-// CONFIG
+// QUESTIONS
+// ===============================
+
+const questions = [
+  { text: "چقدر احساساتت رو می‌شناسی؟", dimension: "mind" },
+  { text: "چقدر استرس روزانه‌ات رو مدیریت می‌کنی؟", dimension: "mind" },
+  { text: "چقدر ذهنت آرام است؟", dimension: "mind" },
+  { text: "چقدر به خودت مهربانی؟", dimension: "mind" },
+  { text: "چقدر افکارت منفی نیستند؟", dimension: "mind" },
+
+  { text: "چقدر هدفت در زندگی مشخص است؟", dimension: "goal" },
+  { text: "چقدر انگیزه‌ی پایدار داری؟", dimension: "goal" },
+  { text: "چقدر به آینده‌ات امیدوار هستی؟", dimension: "goal" },
+  { text: "چقدر برای هدفت تلاش می‌کنی؟", dimension: "goal" },
+  { text: "چقدر می‌دانی چه می‌خواهی؟", dimension: "goal" },
+
+  { text: "چقدر عادت‌های منظمی داری؟", dimension: "habit" },
+  { text: "چقدر برنامه‌ریزی می‌کنی؟", dimension: "habit" },
+  { text: "چقدر به برنامه‌ات پایبندی؟", dimension: "habit" },
+  { text: "چقدر اهمال‌کاری نداری؟", dimension: "habit" },
+  { text: "چقدر کارهایت را کامل می‌کنی؟", dimension: "habit" },
+
+  { text: "چقدر خودت را می‌شناسی؟", dimension: "self" },
+  { text: "چقدر نقاط قوتت را می‌دانی؟", dimension: "self" },
+  { text: "چقدر نقاط ضعفت را پذیرفتی؟", dimension: "self" },
+  { text: "چقدر با خودت صادقی؟", dimension: "self" },
+  { text: "چقدر از درونت آگاهی داری؟", dimension: "self" }
+];
+
+// ===============================
+// STATE
+// ===============================
+
+let currentQuestion = 0;
+const answers = [];
+
+// ===============================
+// UI HELPERS
+// ===============================
+
+const chat = document.getElementById("chat");
+const input = document.getElementById("userInput");
+
+function showBotMessage(text) {
+  const div = document.createElement("div");
+  div.className = "bot";
+  div.innerText = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function showUserMessage(text) {
+  const div = document.createElement("div");
+  div.className = "user";
+  div.innerText = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+// ===============================
+// CHAT LOGIC
+// ===============================
+
+showBotMessage("سلام 🌱\nبه ارزیابی رشد فردی خوش آمدی.\nبه هر سؤال عددی بین ۱ تا ۱۰ بده.");
+
+askQuestion();
+
+function askQuestion() {
+  if (currentQuestion < questions.length) {
+    showBotMessage(
+      `سؤال ${currentQuestion + 1}:\n` + questions[currentQuestion].text
+    );
+  } else {
+    finishAssessment();
+  }
+}
+
+function sendMessage() {
+  const value = Number(input.value);
+  if (!value || value < 1 || value > 10) return;
+
+  showUserMessage(value);
+  answers.push({
+    value,
+    dimension: questions[currentQuestion].dimension
+  });
+
+  input.value = "";
+  currentQuestion++;
+  askQuestion();
+}
+
+// ===============================
+// ANALYSIS CONFIG
 // ===============================
 
 const DIMENSIONS = {
-  mind: {
-    label: "ذهن و احساسات",
-    importance: 1.3
-  },
-  goal: {
-    label: "هدف و انگیزه",
-    importance: 1.1
-  },
-  habit: {
-    label: "نظم و عادت‌ها",
-    importance: 1.2
-  },
-  self: {
-    label: "خودشناسی",
-    importance: 1.0
-  }
+  mind: { label: "ذهن و احساسات", importance: 1.3 },
+  goal: { label: "هدف و انگیزه", importance: 1.1 },
+  habit: { label: "نظم و عادت‌ها", importance: 1.2 },
+  self: { label: "خودشناسی", importance: 1.0 }
 };
 
-// وزن سوال‌ها (قابل توسعه)
-const QUESTION_WEIGHT = 1;
-
 // ===============================
-// INPUT
+// ANALYSIS
 // ===============================
-// answers = [{ value: 1-10, dimension: "mind" }, ...]
 
 function analyzeAssessment(answers) {
-  const dimensionData = initDimensions();
-  const allValues = [];
+  const data = {
+    mind: { sum: 0, count: 0, values: [] },
+    goal: { sum: 0, count: 0, values: [] },
+    habit:{ sum: 0, count: 0, values: [] },
+    self: { sum: 0, count: 0, values: [] }
+  };
 
-  // ===============================
-  // COLLECT DATA
-  // ===============================
+  const all = [];
+
   answers.forEach(a => {
-    dimensionData[a.dimension].sum += a.value * QUESTION_WEIGHT;
-    dimensionData[a.dimension].count += QUESTION_WEIGHT;
-    dimensionData[a.dimension].values.push(a.value);
-    allValues.push(a.value);
+    data[a.dimension].sum += a.value;
+    data[a.dimension].count++;
+    data[a.dimension].values.push(a.value);
+    all.push(a.value);
   });
 
-  // ===============================
-  // SCORE CALCULATION (0-100)
-  // ===============================
-  Object.keys(dimensionData).forEach(key => {
-    const d = dimensionData[key];
-    const avg = d.sum / d.count;        // 1–10
-    d.score = Math.round(avg * 10);     // 0–100
-    d.priority =
-      Math.round((100 - d.score) * DIMENSIONS[key].importance);
+  Object.keys(data).forEach(k => {
+    const avg = data[k].sum / data[k].count;
+    data[k].score = Math.round(avg * 10);
+    data[k].priority =
+      Math.round((100 - data[k].score) * DIMENSIONS[k].importance);
   });
 
-  // ===============================
-  // FIND GROWTH PRIORITY
-  // ===============================
-  const growthDimension = Object.keys(dimensionData)
-    .sort((a, b) => dimensionData[b].priority - dimensionData[a].priority)[0];
+  const growthDimension = Object.keys(data)
+    .sort((a, b) => data[b].priority - data[a].priority)[0];
 
-  // ===============================
-  // RESPONSE PATTERN DETECTION
-  // ===============================
-  const responseProfile = detectResponseProfile(allValues);
+  const responseProfile = detectProfile(all);
 
-  return {
-    scores: dimensionData,
-    growthDimension,
-    responseProfile
-  };
+  return { scores: data, growthDimension, responseProfile };
 }
 
 // ===============================
-// HELPERS
+// PROFILE DETECTION
 // ===============================
 
-function initDimensions() {
-  return {
-    mind: { sum: 0, count: 0, score: 0, priority: 0, values: [] },
-    goal: { sum: 0, count: 0, score: 0, priority: 0, values: [] },
-    habit:{ sum: 0, count: 0, score: 0, priority: 0, values: [] },
-    self: { sum: 0, count: 0, score: 0, priority: 0, values: [] }
-  };
-}
-
-// ===============================
-// RESPONSE TYPE DETECTION
-// ===============================
-
-function detectResponseProfile(values) {
+function detectProfile(values) {
   const avg = mean(values);
-  const variance = stdDeviation(values);
+  const sd = std(values);
   const min = Math.min(...values);
-  const max = Math.max(...values);
 
-  // مردد
-  if (avg >= 4 && avg <= 6 && variance < 1.5) {
-    return {
-      type: "مردد",
-      insight:
-        "تمایل داری در منطقه امن بمانی و به خودت سخت نگیری. نیاز به اعتماد به تصمیم‌گیری داری."
-    };
-  }
+  if (avg >= 4 && avg <= 6 && sd < 1.5)
+    return { type: "مردد", insight: "نیاز به اعتماد به تصمیم‌گیری داری." };
 
-  // کمال‌گرا
-  if (avg > 8 && min >= 7) {
-    return {
-      type: "کمال‌گرا",
-      insight:
-        "استانداردهای بالایی داری و گاهی به خودت فشار بیش از حد می‌آوری."
-    };
-  }
+  if (avg > 8 && min >= 7)
+    return { type: "کمال‌گرا", insight: "استانداردهای خیلی بالایی داری." };
 
-  // نوسانی
-  if (variance > 6) {
-    return {
-      type: "نوسانی",
-      insight:
-        "احساسات و تمرکزت در بازه‌های مختلف تغییر زیادی می‌کند. ثبات برایت کلیدی است."
-    };
-  }
+  if (sd > 6)
+    return { type: "نوسانی", insight: "ثبات احساسی برایت کلیدی است." };
 
-  // فرسوده
-  if (avg < 4 && max <= 5) {
-    return {
-      type: "فرسوده",
-      insight:
-        "احتمالاً خستگی ذهنی یا بی‌انگیزگی داری و نیاز به بازیابی انرژی داری."
-    };
-  }
+  if (avg < 4)
+    return { type: "فرسوده", insight: "نیاز به بازیابی انرژی داری." };
 
-  // متعادل
-  return {
-    type: "متعادل",
-    insight:
-      "تصویر نسبتاً واقع‌بینانه‌ای از خودت داری و آمادگی رشد تدریجی در تو بالاست."
-  };
+  return { type: "متعادل", insight: "آمادگی رشد تدریجی داری." };
 }
-
-// ===============================
-// MATH
-// ===============================
 
 function mean(arr) {
-  return arr.reduce((a, b) => a + b, 0) / arr.length;
+  return arr.reduce((a,b)=>a+b,0)/arr.length;
 }
 
-function stdDeviation(arr) {
-  const avg = mean(arr);
-  const squareDiffs = arr.map(v => Math.pow(v - avg, 2));
-  return Math.sqrt(mean(squareDiffs));
+function std(arr) {
+  const m = mean(arr);
+  return Math.sqrt(mean(arr.map(v => (v-m)**2)));
+}
+
+// ===============================
+// FINISH
+// ===============================
+
+function finishAssessment() {
+  const result = analyzeAssessment(answers);
+
+  let text = "✅ ارزیابی کامل شد\n\n📊 نتایج:\n";
+
+  Object.keys(result.scores).forEach(k => {
+    text += `${DIMENSIONS[k].label}: ${result.scores[k].score}/100\n`;
+  });
+
+  text += `\n🎯 اولویت رشد:\n${DIMENSIONS[result.growthDimension].label}\n`;
+  text += `\n🧠 تیپ پاسخ‌دهی:\n${result.responseProfile.type}\n`;
+  text += result.responseProfile.insight;
+
+  showBotMessage(text);
 }
