@@ -1,54 +1,30 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 <head>
   <meta charset="UTF-8" />
-  <title>Personal Growth Coach</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Growth Assessment</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="dark">
+<body>
 
-<div class="app">
+<div id="app">
+  <div id="header">🌱 ارزیابی رشد فردی</div>
 
-  <!-- Assessment -->
-  <section id="assessment" class="card">
-    <h2>ارزیابی اولیه</h2>
-    <p class="subtitle">به هر سؤال از ۱ تا ۱۰ امتیاز بده</p>
+  <div id="card-area"></div>
 
-    <div id="progress">
-      <div id="progress-bar"></div>
-    </div>
-
-    <div id="question-box"></div>
-
-    <div class="actions">
-      <button id="next-question">بعدی</button>
-    </div>
-  </section>
-
-  <!-- Coach -->
-  <section id="coach" class="card hidden">
-    <h2>Coach</h2>
-    <div id="coach-chat"></div>
-
-    <div class="actions hidden" id="coach-action">
-      <button id="go-to-program">بریم تو برنامه</button>
-    </div>
-  </section>
-
-  <!-- Program -->
-  <section id="program" class="card hidden">
-    <h2>برنامه رشد تو</h2>
-
-    <div id="dashboard"></div>
-    <div id="program-content"></div>
-
-    <div class="actions">
-      <button id="daily-check">چک‌این امروز</button>
-    </div>
-  </section>
-
+  <div id="input-area">
+    <input
+      type="number"
+      id="userInput"
+      min="1"
+      max="10"
+      placeholder="عدد ۱ تا ۱۰"
+    />
+    <button id="sendBtn">ارسال</button>
+  </div>
 </div>
+
+<canvas id="confetti"></canvas>
 
 <script src="script.js"></script>
 </body>
