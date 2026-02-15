@@ -1,4 +1,3 @@
-/* ---------- QUESTIONS ---------- */
 const questions = [
   { text: "چقدر احساساتت رو می‌شناسی؟", d: "mind" },
   { text: "چقدر ذهنت آرام است؟", d: "mind" },
@@ -24,19 +23,19 @@ const DIM = {
   self: "خودشناسی"
 };
 
-let i = 0;
+let index = 0;
 const answers = [];
 
 const cardArea = document.getElementById("card-area");
 const input = document.getElementById("userInput");
 
-/* ---------- THEME ---------- */
+/* THEME */
 document.getElementById("themeToggle").onclick = () => {
   document.body.classList.toggle("dark");
   document.body.classList.toggle("light");
 };
 
-/* ---------- INPUT ---------- */
+/* INPUT */
 input.addEventListener("keydown", e => {
   if (e.key === "Enter") submit();
 });
@@ -44,14 +43,13 @@ document.getElementById("sendBtn").onclick = submit;
 
 render();
 
-/* ---------- FUNCTIONS ---------- */
 function render() {
   cardArea.innerHTML = `
     <div class="question-card">
       <div class="question-number">
-        سؤال ${i + 1} از ${questions.length}
+        سؤال ${index + 1} از ${questions.length}
       </div>
-      <div class="question-text">${questions[i].text}</div>
+      <div class="question-text">${questions[index].text}</div>
     </div>
   `;
 }
@@ -60,28 +58,26 @@ function submit() {
   const v = +input.value;
   if (v < 1 || v > 10) return;
 
-  answers.push({ v, d: questions[i].d });
+  answers.push({ v, d: questions[index].d });
   input.value = "";
 
   document.querySelector(".question-card").classList.add("card-exit");
 
   setTimeout(() => {
-    i++;
-    i < questions.length ? render() : showResult();
-  }, 400);
+    index++;
+    index < questions.length ? render() : showResult();
+  }, 300);
 }
 
 function showResult() {
-  const data = {};
-  Object.keys(DIM).forEach(k => data[k] = []);
-
+  const data = { mind: [], goal: [], habit: [], self: [] };
   answers.forEach(a => data[a.d].push(a.v));
 
   launchConfetti();
 
-  let html = `<div class="question-card"><strong>🎯 نتیجه ارزیابی</strong><br><br>`;
   let weakest = null;
   let min = 101;
+  let html = `<div class="question-card"><strong>🎯 نتیجه ارزیابی</strong><br><br>`;
 
   Object.keys(data).forEach(k => {
     const score = Math.round(
@@ -91,7 +87,7 @@ function showResult() {
 
     html += `
       <div class="result-row">
-        <div class="result-label">${DIM[k]} – ${score}%</div>
+        <div>${DIM[k]} – ${score}%</div>
         <div class="progress">
           <div class="progress-fill" style="--value:${score}%"></div>
         </div>
@@ -99,26 +95,53 @@ function showResult() {
     `;
   });
 
+  const selfScore = Math.round(
+    (data.self.reduce((a,b)=>a+b,0) / data.self.length) * 10
+  );
+
+  let coachMessage = "";
+
+  if (selfScore < 85) {
+    coachMessage = `
+      🔑 <strong>مسیر رشد اصلی تو:</strong><br>
+      در این مرحله، مهم‌ترین کار تو
+      <strong>خودشناسی عمیق‌تر</strong> و
+      <strong>ایجاد آرامش ذهنی</strong> است.<br><br>
+
+      هم‌زمان، به‌صورت تدریجی روی
+      <strong>${DIM[weakest]}</strong> کار کن.
+      فشار نیاور؛ ثبات مهم‌تر از شدت است.
+    `;
+  } else {
+    coachMessage = `
+      🚀 <strong>مسیر رشد اصلی تو:</strong><br>
+      خودشناسی تو در سطح خوبی است.
+      تمرکز اصلی رشد تو باید روی
+      <strong>${DIM[weakest]}</strong> باشد.<br><br>
+
+      پیشنهاد Coach:
+      هدف ۳۰ روزه مشخص و قابل اندازه‌گیری تعریف کن.
+    `;
+  }
+
   html += `
     <div class="coach-box">
       🧭 <strong>Coach:</strong><br>
-      تمرکز اصلی رشد تو روی <strong>${DIM[weakest]}</strong> است.
-      اگر روزی فقط ۲۰ دقیقه آگاهانه روی این بُعد کار کنی،
-      در کمتر از یک ماه تغییر محسوسی احساس می‌کنی.
+      ${coachMessage}
     </div>
   </div>`;
 
   cardArea.innerHTML = html;
 }
 
-/* ---------- CONFETTI ---------- */
+/* CONFETTI */
 function launchConfetti() {
   const c = document.getElementById("confetti");
-  const x = c.getContext("2d");
+  const ctx = c.getContext("2d");
   c.width = innerWidth;
   c.height = innerHeight;
 
-  const p = Array.from({length:100},()=>({
+  const p = Array.from({length:90},()=>({
     x:Math.random()*c.width,
     y:-Math.random()*c.height,
     r:Math.random()*6+4,
@@ -126,12 +149,12 @@ function launchConfetti() {
   }));
 
   (function draw(){
-    x.clearRect(0,0,c.width,c.height);
+    ctx.clearRect(0,0,c.width,c.height);
     p.forEach(o=>{
-      x.beginPath();
-      x.arc(o.x,o.y+=o.s,o.r,0,7);
-      x.fillStyle=`hsl(${Math.random()*40+20},100%,60%)`;
-      x.fill();
+      ctx.beginPath();
+      ctx.arc(o.x,o.y+=o.s,o.r,0,7);
+      ctx.fillStyle=`hsl(${Math.random()*40+20},100%,60%)`;
+      ctx.fill();
     });
     requestAnimationFrame(draw);
   })();
