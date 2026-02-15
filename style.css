@@ -1,3 +1,4 @@
+/* ===== Base ===== */
 * {
   box-sizing: border-box;
   font-family: Vazirmatn, sans-serif;
@@ -22,38 +23,13 @@ body {
   box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
-.hidden {
-  display: none;
-}
+.hidden { display: none; }
 
-h2 {
-  margin-top: 0;
-  text-align: center;
-}
+h2 { text-align: center; margin-top: 0; }
 
-.subtitle {
-  text-align: center;
-  opacity: 0.7;
-}
+.subtitle { text-align: center; opacity: 0.7; }
 
-#question-box {
-  margin-top: 20px;
-  text-align: center;
-}
-
-input[type="number"] {
-  width: 100%;
-  padding: 12px;
-  font-size: 18px;
-  border-radius: 10px;
-  border: none;
-  margin-top: 12px;
-}
-
-.actions {
-  margin-top: 20px;
-  text-align: center;
-}
+.actions { text-align: center; margin-top: 20px; }
 
 button {
   background: #6366f1;
@@ -65,17 +41,13 @@ button {
   cursor: pointer;
 }
 
-button:hover {
-  background: #4f46e5;
-}
+button:hover { background: #4f46e5; }
 
-/* Coach Chat */
-
+/* ===== Coach ===== */
 #coach-chat {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: 16px;
 }
 
 .message {
@@ -84,12 +56,33 @@ button:hover {
   line-height: 1.6;
 }
 
-.coach {
-  background: #1e293b;
-  align-self: flex-start;
+.coach { background: #1e293b; align-self: flex-start; }
+.system { background: #0f766e; align-self: center; }
+
+/* ===== Program ===== */
+#dashboard {
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
 }
 
-.system {
-  background: #0f766e;
-  align-self: center;
+.badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.stabilize { background: #334155; }
+.build { background: #78350f; }
+.execute { background: #064e3b; }
+
+.tool {
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 14px;
 }
