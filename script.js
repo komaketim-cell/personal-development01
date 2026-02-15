@@ -1,7 +1,3 @@
-// ===============================
-// QUESTIONS
-// ===============================
-
 const questions = [
   { text: "چقدر احساساتت رو می‌شناسی؟", dimension: "mind" },
   { text: "چقدر استرس روزانه‌ات رو مدیریت می‌کنی؟", dimension: "mind" },
@@ -28,16 +24,15 @@ const questions = [
   { text: "چقدر از درونت آگاهی داری؟", dimension: "self" }
 ];
 
-// ===============================
-// STATE
-// ===============================
+const DIMENSIONS = {
+  mind: { label: "ذهن و احساسات", importance: 1.3 },
+  goal: { label: "هدف و انگیزه", importance: 1.1 },
+  habit: { label: "نظم و عادت‌ها", importance: 1.2 },
+  self: { label: "خودشناسی", importance: 1.0 }
+};
 
 let currentQuestion = 0;
 const answers = [];
-
-// ===============================
-// UI HELPERS
-// ===============================
 
 const chat = document.getElementById("chat");
 const input = document.getElementById("userInput");
@@ -58,10 +53,6 @@ function showUserMessage(text) {
   chat.scrollTop = chat.scrollHeight;
 }
 
-// ===============================
-// CHAT LOGIC
-// ===============================
-
 showBotMessage("سلام 🌱\nبه ارزیابی رشد فردی خوش آمدی.\nبه هر سؤال عددی بین ۱ تا ۱۰ بده.");
 
 askQuestion();
@@ -69,7 +60,8 @@ askQuestion();
 function askQuestion() {
   if (currentQuestion < questions.length) {
     showBotMessage(
-      `سؤال ${currentQuestion + 1}:\n` + questions[currentQuestion].text
+      `سؤال ${currentQuestion + 1}:\n` +
+      questions[currentQuestion].text
     );
   } else {
     finishAssessment();
@@ -91,28 +83,11 @@ function sendMessage() {
   askQuestion();
 }
 
-// ===============================
-// ANALYSIS CONFIG
-// ===============================
-
-const DIMENSIONS = {
-  mind: { label: "ذهن و احساسات", importance: 1.3 },
-  goal: { label: "هدف و انگیزه", importance: 1.1 },
-  habit: { label: "نظم و عادت‌ها", importance: 1.2 },
-  self: { label: "خودشناسی", importance: 1.0 }
-};
-
-// ===============================
-// ANALYSIS
-// ===============================
-
 function analyzeAssessment(answers) {
-  const data = {
-    mind: { sum: 0, count: 0, values: [] },
-    goal: { sum: 0, count: 0, values: [] },
-    habit:{ sum: 0, count: 0, values: [] },
-    self: { sum: 0, count: 0, values: [] }
-  };
+  const data = {};
+  Object.keys(DIMENSIONS).forEach(k => {
+    data[k] = { sum: 0, count: 0, values: [] };
+  });
 
   const all = [];
 
@@ -138,10 +113,6 @@ function analyzeAssessment(answers) {
   return { scores: data, growthDimension, responseProfile };
 }
 
-// ===============================
-// PROFILE DETECTION
-// ===============================
-
 function detectProfile(values) {
   const avg = mean(values);
   const sd = std(values);
@@ -163,17 +134,13 @@ function detectProfile(values) {
 }
 
 function mean(arr) {
-  return arr.reduce((a,b)=>a+b,0)/arr.length;
+  return arr.reduce((a, b) => a + b, 0) / arr.length;
 }
 
 function std(arr) {
   const m = mean(arr);
-  return Math.sqrt(mean(arr.map(v => (v-m)**2)));
+  return Math.sqrt(mean(arr.map(v => (v - m) ** 2)));
 }
-
-// ===============================
-// FINISH
-// ===============================
 
 function finishAssessment() {
   const result = analyzeAssessment(answers);
