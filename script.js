@@ -1,161 +1,164 @@
+/* ======================
+   Assessment Data
+====================== */
+
 const questions = [
-  { text: "چقدر احساساتت رو می‌شناسی؟", d: "mind" },
-  { text: "چقدر ذهنت آرام است؟", d: "mind" },
-  { text: "چقدر استرس را مدیریت می‌کنی؟", d: "mind" },
+  { text: "چقدر ذهنت آرام است؟", dimension: "mind" },
+  { text: "چقدر هدفت شفاف است؟", dimension: "goal" },
+  { text: "چقدر به عادت‌ها پایبندی؟", dimension: "habit" },
+  { text: "چقدر خودت را می‌شناسی؟", dimension: "self" },
 
-  { text: "چقدر هدفت شفاف است؟", d: "goal" },
-  { text: "چقدر انگیزه پایدار داری؟", d: "goal" },
-  { text: "چقدر به آینده امیدوار هستی؟", d: "goal" },
+  { text: "تمرکزت چقدر پایدار است؟", dimension: "mind" },
+  { text: "انگیزه‌ات چقدر ثابت است؟", dimension: "goal" },
+  { text: "عادت‌هایت چقدر خودکارند؟", dimension: "habit" },
+  { text: "احساست را چقدر می‌فهمی؟", dimension: "self" },
 
-  { text: "چقدر عادت‌های منظمی داری؟", d: "habit" },
-  { text: "چقدر برنامه‌ریزی می‌کنی؟", d: "habit" },
-  { text: "چقدر کارها را کامل می‌کنی؟", d: "habit" },
-
-  { text: "چقدر خودت را می‌شناسی؟", d: "self" },
-  { text: "چقدر با خودت صادقی؟", d: "self" },
-  { text: "چقدر از درونت آگاهی داری؟", d: "self" }
+  { text: "ذهنت چقدر شلوغ است؟", dimension: "mind" },
+  { text: "هدفت چقدر قابل اجراست؟", dimension: "goal" },
+  { text: "در عادت‌ها چقدر استمرار داری؟", dimension: "habit" },
+  { text: "چقدر نقاط قوت و ضعفت را می‌دانی؟", dimension: "self" },
 ];
 
-const DIM = {
-  mind: "ذهن و احساسات",
-  goal: "هدف و انگیزه",
-  habit: "نظم و عادت‌ها",
-  self: "خودشناسی"
-};
-
-let index = 0;
+let currentQuestion = 0;
 const answers = [];
 
-const cardArea = document.getElementById("card-area");
-const input = document.getElementById("userInput");
+/* ======================
+   Elements
+====================== */
 
-/* THEME */
-document.getElementById("themeToggle").onclick = () => {
-  document.body.classList.toggle("dark");
-  document.body.classList.toggle("light");
-};
+const assessmentSection = document.getElementById("assessment");
+const coachSection = document.getElementById("coach");
+const questionBox = document.getElementById("question-box");
+const nextBtn = document.getElementById("next-question");
+const coachChat = document.getElementById("coach-chat");
+const coachAction = document.getElementById("coach-action");
+const goToProgramBtn = document.getElementById("go-to-program");
 
-/* INPUT */
-input.addEventListener("keydown", e => {
-  if (e.key === "Enter") submit();
-});
-document.getElementById("sendBtn").onclick = submit;
+/* ======================
+   Assessment Logic
+====================== */
 
-render();
-
-function render() {
-  cardArea.innerHTML = `
-    <div class="question-card">
-      <div class="question-number">
-        سؤال ${index + 1} از ${questions.length}
-      </div>
-      <div class="question-text">${questions[index].text}</div>
-    </div>
+function renderQuestion() {
+  const q = questions[currentQuestion];
+  questionBox.innerHTML = `
+    <div>${q.text}</div>
+    <input id="answer" type="number" min="1" max="10" placeholder="۱ تا ۱۰" />
   `;
 }
 
-function submit() {
-  const v = +input.value;
-  if (v < 1 || v > 10) return;
+renderQuestion();
 
-  answers.push({ v, d: questions[index].d });
-  input.value = "";
+nextBtn.addEventListener("click", () => {
+  const input = document.getElementById("answer");
+  const value = Number(input.value);
 
-  document.querySelector(".question-card").classList.add("card-exit");
-
-  setTimeout(() => {
-    index++;
-    index < questions.length ? render() : showResult();
-  }, 300);
-}
-
-function showResult() {
-  const data = { mind: [], goal: [], habit: [], self: [] };
-  answers.forEach(a => data[a.d].push(a.v));
-
-  launchConfetti();
-
-  let weakest = null;
-  let min = 101;
-  let html = `<div class="question-card"><strong>🎯 نتیجه ارزیابی</strong><br><br>`;
-
-  Object.keys(data).forEach(k => {
-    const score = Math.round(
-      (data[k].reduce((a,b)=>a+b,0) / data[k].length) * 10
-    );
-    if (score < min) { min = score; weakest = k; }
-
-    html += `
-      <div class="result-row">
-        <div>${DIM[k]} – ${score}%</div>
-        <div class="progress">
-          <div class="progress-fill" style="--value:${score}%"></div>
-        </div>
-      </div>
-    `;
-  });
-
-  const selfScore = Math.round(
-    (data.self.reduce((a,b)=>a+b,0) / data.self.length) * 10
-  );
-
-  let coachMessage = "";
-
-  if (selfScore < 85) {
-    coachMessage = `
-      🔑 <strong>مسیر رشد اصلی تو:</strong><br>
-      در این مرحله، مهم‌ترین کار تو
-      <strong>خودشناسی عمیق‌تر</strong> و
-      <strong>ایجاد آرامش ذهنی</strong> است.<br><br>
-
-      هم‌زمان، به‌صورت تدریجی روی
-      <strong>${DIM[weakest]}</strong> کار کن.
-      فشار نیاور؛ ثبات مهم‌تر از شدت است.
-    `;
-  } else {
-    coachMessage = `
-      🚀 <strong>مسیر رشد اصلی تو:</strong><br>
-      خودشناسی تو در سطح خوبی است.
-      تمرکز اصلی رشد تو باید روی
-      <strong>${DIM[weakest]}</strong> باشد.<br><br>
-
-      پیشنهاد Coach:
-      هدف ۳۰ روزه مشخص و قابل اندازه‌گیری تعریف کن.
-    `;
+  if (!value || value < 1 || value > 10) {
+    alert("عدد بین ۱ تا ۱۰ وارد کن");
+    return;
   }
 
-  html += `
-    <div class="coach-box">
-      🧭 <strong>Coach:</strong><br>
-      ${coachMessage}
-    </div>
-  </div>`;
+  answers.push({
+    dimension: questions[currentQuestion].dimension,
+    value
+  });
 
-  cardArea.innerHTML = html;
+  currentQuestion++;
+
+  if (currentQuestion < questions.length) {
+    renderQuestion();
+  } else {
+    finishAssessment();
+  }
+});
+
+/* ======================
+   Scoring & Coach
+====================== */
+
+function finishAssessment() {
+  assessmentSection.classList.add("hidden");
+  coachSection.classList.remove("hidden");
+
+  const scores = calculateScores();
+  const coachState = determineCoachState(scores);
+
+  startCoach(coachState, scores);
 }
 
-/* CONFETTI */
-function launchConfetti() {
-  const c = document.getElementById("confetti");
-  const ctx = c.getContext("2d");
-  c.width = innerWidth;
-  c.height = innerHeight;
+function calculateScores() {
+  const totals = { mind: [], goal: [], habit: [], self: [] };
 
-  const p = Array.from({length:90},()=>({
-    x:Math.random()*c.width,
-    y:-Math.random()*c.height,
-    r:Math.random()*6+4,
-    s:Math.random()*4+2
-  }));
+  answers.forEach(a => totals[a.dimension].push(a.value));
 
-  (function draw(){
-    ctx.clearRect(0,0,c.width,c.height);
-    p.forEach(o=>{
-      ctx.beginPath();
-      ctx.arc(o.x,o.y+=o.s,o.r,0,7);
-      ctx.fillStyle=`hsl(${Math.random()*40+20},100%,60%)`;
-      ctx.fill();
-    });
-    requestAnimationFrame(draw);
-  })();
+  const avg = d =>
+    totals[d].reduce((a, b) => a + b, 0) / totals[d].length * 10;
+
+  return {
+    mind: avg("mind"),
+    goal: avg("goal"),
+    habit: avg("habit"),
+    self: avg("self")
+  };
 }
+
+function determineCoachState(scores) {
+  if (scores.self < 70) return "STABILIZE";
+  if (scores.self < 85) return "BUILD";
+  return "EXECUTE";
+}
+
+/* ======================
+   Coach Chat
+====================== */
+
+function addCoachMessage(text, type = "coach") {
+  const div = document.createElement("div");
+  div.className = `message ${type}`;
+  div.innerText = text;
+  coachChat.appendChild(div);
+}
+
+function startCoach(state, scores) {
+  addCoachMessage("اجازه بده یک‌کم با هم فضا را تنظیم کنیم.");
+
+  setTimeout(() => {
+    if (state === "STABILIZE") {
+      addCoachMessage(
+        "الان مهم‌ترین کار تو آرام‌سازی ذهن و افزایش خودشناسیه. عجله نداریم."
+      );
+      addCoachMessage(
+        "فعلاً فقط ضعیف‌ترین بُعدت رو می‌شناسیم، نه اینکه روش فشار بیاریم."
+      );
+    }
+
+    if (state === "BUILD") {
+      addCoachMessage(
+        "تو آماده ساختن هستی، اما با قدم‌های کنترل‌شده."
+      );
+      addCoachMessage(
+        "خودشناسی فعال + کار تدریجی روی ضعیف‌ترین بُعد."
+      );
+    }
+
+    if (state === "EXECUTE") {
+      addCoachMessage(
+        "تو آماده اجرایی. تمرکز کامل روی ضعیف‌ترین بُعد."
+      );
+      addCoachMessage(
+        "برنامه‌ات باید شفاف و قابل اندازه‌گیری باشد."
+      );
+    }
+
+    addCoachMessage(`Stage فعلی تو: ${state}`, "system");
+
+    coachAction.classList.remove("hidden");
+  }, 600);
+}
+
+/* ======================
+   Go To Program
+====================== */
+
+goToProgramBtn.addEventListener("click", () => {
+  alert("مرحله بعدی: ورود به برنامه (در قدم بعدی پیاده‌سازی می‌شود)");
+});
