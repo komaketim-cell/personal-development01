@@ -1,159 +1,138 @@
+/* ---------- QUESTIONS ---------- */
 const questions = [
-  { text: "چقدر احساساتت رو می‌شناسی؟", dimension: "mind" },
-  { text: "چقدر استرس روزانه‌ات رو مدیریت می‌کنی؟", dimension: "mind" },
-  { text: "چقدر ذهنت آرام است؟", dimension: "mind" },
-  { text: "چقدر به خودت مهربانی؟", dimension: "mind" },
-  { text: "چقدر افکارت منفی نیستند؟", dimension: "mind" },
+  { text: "چقدر احساساتت رو می‌شناسی؟", d: "mind" },
+  { text: "چقدر ذهنت آرام است؟", d: "mind" },
+  { text: "چقدر استرس را مدیریت می‌کنی؟", d: "mind" },
 
-  { text: "چقدر هدفت در زندگی مشخص است؟", dimension: "goal" },
-  { text: "چقدر انگیزه‌ی پایدار داری؟", dimension: "goal" },
-  { text: "چقدر به آینده‌ات امیدوار هستی؟", dimension: "goal" },
-  { text: "چقدر برای هدفت تلاش می‌کنی؟", dimension: "goal" },
-  { text: "چقدر می‌دانی چه می‌خواهی؟", dimension: "goal" },
+  { text: "چقدر هدفت شفاف است؟", d: "goal" },
+  { text: "چقدر انگیزه پایدار داری؟", d: "goal" },
+  { text: "چقدر به آینده امیدوار هستی؟", d: "goal" },
 
-  { text: "چقدر عادت‌های منظمی داری؟", dimension: "habit" },
-  { text: "چقدر برنامه‌ریزی می‌کنی؟", dimension: "habit" },
-  { text: "چقدر به برنامه‌ات پایبندی؟", dimension: "habit" },
-  { text: "چقدر اهمال‌کاری نداری؟", dimension: "habit" },
-  { text: "چقدر کارهایت را کامل می‌کنی؟", dimension: "habit" },
+  { text: "چقدر عادت‌های منظمی داری؟", d: "habit" },
+  { text: "چقدر برنامه‌ریزی می‌کنی؟", d: "habit" },
+  { text: "چقدر کارها را کامل می‌کنی؟", d: "habit" },
 
-  { text: "چقدر خودت را می‌شناسی؟", dimension: "self" },
-  { text: "چقدر نقاط قوتت را می‌دانی؟", dimension: "self" },
-  { text: "چقدر نقاط ضعفت را پذیرفتی؟", dimension: "self" },
-  { text: "چقدر با خودت صادقی؟", dimension: "self" },
-  { text: "چقدر از درونت آگاهی داری؟", dimension: "self" }
+  { text: "چقدر خودت را می‌شناسی؟", d: "self" },
+  { text: "چقدر با خودت صادقی؟", d: "self" },
+  { text: "چقدر از درونت آگاهی داری؟", d: "self" }
 ];
 
-const DIMENSIONS = {
-  mind: { label: "ذهن و احساسات", importance: 1.3 },
-  goal: { label: "هدف و انگیزه", importance: 1.1 },
-  habit: { label: "نظم و عادت‌ها", importance: 1.2 },
-  self: { label: "خودشناسی", importance: 1.0 }
+const DIM = {
+  mind: "ذهن و احساسات",
+  goal: "هدف و انگیزه",
+  habit: "نظم و عادت‌ها",
+  self: "خودشناسی"
 };
 
-let currentQuestion = 0;
+let i = 0;
 const answers = [];
 
-const chat = document.getElementById("chat");
+const cardArea = document.getElementById("card-area");
 const input = document.getElementById("userInput");
 
-function showBotMessage(text) {
-  const div = document.createElement("div");
-  div.className = "bot";
-  div.innerText = text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
+/* ---------- THEME ---------- */
+document.getElementById("themeToggle").onclick = () => {
+  document.body.classList.toggle("dark");
+  document.body.classList.toggle("light");
+};
+
+/* ---------- INPUT ---------- */
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter") submit();
+});
+document.getElementById("sendBtn").onclick = submit;
+
+render();
+
+/* ---------- FUNCTIONS ---------- */
+function render() {
+  cardArea.innerHTML = `
+    <div class="question-card">
+      <div class="question-number">
+        سؤال ${i + 1} از ${questions.length}
+      </div>
+      <div class="question-text">${questions[i].text}</div>
+    </div>
+  `;
 }
 
-function showUserMessage(text) {
-  const div = document.createElement("div");
-  div.className = "user";
-  div.innerText = text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
+function submit() {
+  const v = +input.value;
+  if (v < 1 || v > 10) return;
 
-showBotMessage("سلام 🌱\nبه ارزیابی رشد فردی خوش آمدی.\nبه هر سؤال عددی بین ۱ تا ۱۰ بده.");
-
-askQuestion();
-
-function askQuestion() {
-  if (currentQuestion < questions.length) {
-    showBotMessage(
-      `سؤال ${currentQuestion + 1}:\n` +
-      questions[currentQuestion].text
-    );
-  } else {
-    finishAssessment();
-  }
-}
-
-function sendMessage() {
-  const value = Number(input.value);
-  if (!value || value < 1 || value > 10) return;
-
-  showUserMessage(value);
-  answers.push({
-    value,
-    dimension: questions[currentQuestion].dimension
-  });
-
+  answers.push({ v, d: questions[i].d });
   input.value = "";
-  currentQuestion++;
-  askQuestion();
+
+  document.querySelector(".question-card").classList.add("card-exit");
+
+  setTimeout(() => {
+    i++;
+    i < questions.length ? render() : showResult();
+  }, 400);
 }
 
-function analyzeAssessment(answers) {
+function showResult() {
   const data = {};
-  Object.keys(DIMENSIONS).forEach(k => {
-    data[k] = { sum: 0, count: 0, values: [] };
-  });
+  Object.keys(DIM).forEach(k => data[k] = []);
 
-  const all = [];
+  answers.forEach(a => data[a.d].push(a.v));
 
-  answers.forEach(a => {
-    data[a.dimension].sum += a.value;
-    data[a.dimension].count++;
-    data[a.dimension].values.push(a.value);
-    all.push(a.value);
-  });
+  launchConfetti();
+
+  let html = `<div class="question-card"><strong>🎯 نتیجه ارزیابی</strong><br><br>`;
+  let weakest = null;
+  let min = 101;
 
   Object.keys(data).forEach(k => {
-    const avg = data[k].sum / data[k].count;
-    data[k].score = Math.round(avg * 10);
-    data[k].priority =
-      Math.round((100 - data[k].score) * DIMENSIONS[k].importance);
+    const score = Math.round(
+      (data[k].reduce((a,b)=>a+b,0) / data[k].length) * 10
+    );
+    if (score < min) { min = score; weakest = k; }
+
+    html += `
+      <div class="result-row">
+        <div class="result-label">${DIM[k]} – ${score}%</div>
+        <div class="progress">
+          <div class="progress-fill" style="--value:${score}%"></div>
+        </div>
+      </div>
+    `;
   });
 
-  const growthDimension = Object.keys(data)
-    .sort((a, b) => data[b].priority - data[a].priority)[0];
+  html += `
+    <div class="coach-box">
+      🧭 <strong>Coach:</strong><br>
+      تمرکز اصلی رشد تو روی <strong>${DIM[weakest]}</strong> است.
+      اگر روزی فقط ۲۰ دقیقه آگاهانه روی این بُعد کار کنی،
+      در کمتر از یک ماه تغییر محسوسی احساس می‌کنی.
+    </div>
+  </div>`;
 
-  const responseProfile = detectProfile(all);
-
-  return { scores: data, growthDimension, responseProfile };
+  cardArea.innerHTML = html;
 }
 
-function detectProfile(values) {
-  const avg = mean(values);
-  const sd = std(values);
-  const min = Math.min(...values);
+/* ---------- CONFETTI ---------- */
+function launchConfetti() {
+  const c = document.getElementById("confetti");
+  const x = c.getContext("2d");
+  c.width = innerWidth;
+  c.height = innerHeight;
 
-  if (avg >= 4 && avg <= 6 && sd < 1.5)
-    return { type: "مردد", insight: "نیاز به اعتماد به تصمیم‌گیری داری." };
+  const p = Array.from({length:100},()=>({
+    x:Math.random()*c.width,
+    y:-Math.random()*c.height,
+    r:Math.random()*6+4,
+    s:Math.random()*4+2
+  }));
 
-  if (avg > 8 && min >= 7)
-    return { type: "کمال‌گرا", insight: "استانداردهای خیلی بالایی داری." };
-
-  if (sd > 6)
-    return { type: "نوسانی", insight: "ثبات احساسی برایت کلیدی است." };
-
-  if (avg < 4)
-    return { type: "فرسوده", insight: "نیاز به بازیابی انرژی داری." };
-
-  return { type: "متعادل", insight: "آمادگی رشد تدریجی داری." };
-}
-
-function mean(arr) {
-  return arr.reduce((a, b) => a + b, 0) / arr.length;
-}
-
-function std(arr) {
-  const m = mean(arr);
-  return Math.sqrt(mean(arr.map(v => (v - m) ** 2)));
-}
-
-function finishAssessment() {
-  const result = analyzeAssessment(answers);
-
-  let text = "✅ ارزیابی کامل شد\n\n📊 نتایج:\n";
-
-  Object.keys(result.scores).forEach(k => {
-    text += `${DIMENSIONS[k].label}: ${result.scores[k].score}/100\n`;
-  });
-
-  text += `\n🎯 اولویت رشد:\n${DIMENSIONS[result.growthDimension].label}\n`;
-  text += `\n🧠 تیپ پاسخ‌دهی:\n${result.responseProfile.type}\n`;
-  text += result.responseProfile.insight;
-
-  showBotMessage(text);
+  (function draw(){
+    x.clearRect(0,0,c.width,c.height);
+    p.forEach(o=>{
+      x.beginPath();
+      x.arc(o.x,o.y+=o.s,o.r,0,7);
+      x.fillStyle=`hsl(${Math.random()*40+20},100%,60%)`;
+      x.fill();
+    });
+    requestAnimationFrame(draw);
+  })();
 }
