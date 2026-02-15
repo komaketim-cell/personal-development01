@@ -12,16 +12,16 @@
       🌱 چت‌بات رشد فردی
     </div>
 
-    <div id="chat-box" class="chat-box">
-      <div class="bot-message">
-        سلام 🌱  
-        خوشحالم اینجایی.  
-        دوست داری بیشتر روی کدوم بخش زندگیت کار کنیم؟
-      </div>
-    </div>
+    <div id="chat-box" class="chat-box"></div>
 
     <div class="chat-input">
-      <input type="text" id="user-input" placeholder="پیامت رو بنویس..." />
+      <input
+        type="number"
+        id="user-input"
+        placeholder="عدد 1 تا 10 وارد کن"
+        min="1"
+        max="10"
+      />
       <button onclick="sendMessage()">ارسال</button>
     </div>
   </div>
