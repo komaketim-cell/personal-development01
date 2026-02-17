@@ -152,47 +152,9 @@ function detectResponseType(data) {
 }
 
 /*************************
- * COACH LOGIC
- *************************/
-function getCoachInsight(data) {
-  const selfScore = data.self.score;
-
-  let state;
-  let message;
-
-  if (selfScore < 70) {
-    state = "STABILIZE";
-    message =
-      "الان مهم‌ترین قدم تو، آرام‌سازی و خودشناسیه. لازم نیست خودتو هل بدی؛ اول باید زمین زیر پات سفت بشه.";
-  } else if (selfScore < 85) {
-    state = "BUILD";
-    message =
-      "پایه‌ی خودشناسی‌ت خوبه. می‌تونیم همزمان با حفظ آرامش، روی رشد تدریجی یکی از بخش‌ها کار کنیم.";
-  } else {
-    state = "EXECUTE";
-    message =
-      "خودشناسی‌ت در سطح بالاییه. بهترین کار الان تمرکز مستقیم روی ضعیف‌ترین بُعد و رشد هدفمنده.";
-  }
-
-  const focusKey =
-    Object.keys(DIMENSIONS)
-      .filter(k => k !== "self")
-      .sort((a,b)=>data[b].priority - data[a].priority)[0];
-
-  return {
-    state,
-    message,
-    focusKey,
-    focusLabel: DIMENSIONS[focusKey].label
-  };
-}
-
-/*************************
- * RESULT UI
+ * RESULT UI (Progress Bars)
  *************************/
 function showResults(data) {
-  const coach = getCoachInsight(data);
-
   let html = `<div class="question-card">`;
 
   Object.keys(DIMENSIONS).forEach(k => {
@@ -212,54 +174,27 @@ function showResults(data) {
     <hr style="margin:20px 0">
 
     <div class="result-row">
-      <strong>🎯 امتیاز کل:</strong> ${data.overallScore}%
+      <strong>🎯 امتیاز کل:</strong>
+      ${data.overallScore}%
     </div>
 
     <div class="result-row">
-      <strong>🧠 تیپ پاسخ‌دهی:</strong> ${data.responseType}
-    </div>
-
-    <hr style="margin:20px 0">
-
-    <div class="result-row">
-      <strong>👤 Coach:</strong><br>
-      ${coach.message}
+      <strong>🧠 تیپ پاسخ‌دهی:</strong>
+      ${data.responseType}
     </div>
 
     <div class="result-row">
-      <strong>🎯 تمرکز پیشنهادی:</strong>
-      ${coach.focusLabel}
+      <strong>🚀 اولویت رشد:</strong>
+      ${Object.keys(DIMENSIONS)
+        .sort((a,b)=>data[b].priority - data[a].priority)
+        .map(k => DIMENSIONS[k].label)
+        .join(" → ")
+      }
     </div>
-
-    <button
-      onclick="startCoachProgram('${coach.focusKey}')"
-      style="
-        margin-top:20px;
-        width:100%;
-        padding:14px;
-        border:none;
-        border-radius:16px;
-        font-weight:bold;
-        cursor:pointer;
-        color:white;
-        background:linear-gradient(135deg,#ff8c1a,#ffb703);
-        box-shadow:0 12px 30px rgba(255,140,26,0.4);
-      "
-    >
-      🚀 ورود به برنامه رشد شخصی
-    </button>
   `;
 
   html += `</div>`;
 
   cardArea.innerHTML = html;
   document.getElementById("input-area").style.display = "none";
-}
-
-/*************************
- * PROGRAM ENTRY
- *************************/
-function startCoachProgram(focusKey) {
-  console.log("Start program for:", focusKey);
-  alert("مرحله بعد: ورود به برنامه عملی (" + DIMENSIONS[focusKey].label + ")");
 }
