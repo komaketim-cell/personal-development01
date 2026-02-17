@@ -1,31 +1,49 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Growth Assessment</title>
+
+  <!-- Main Style -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<div id="app">
-  <div id="header">🌱 ارزیابی رشد فردی</div>
+  <div id="app">
 
-  <div id="card-area"></div>
+    <!-- Header -->
+    <div id="header">
+      🌱 ارزیابی رشد فردی
+    </div>
 
-  <div id="input-area">
-    <input
-      type="number"
-      id="userInput"
-      min="1"
-      max="10"
-      placeholder="عدد ۱ تا ۱۰"
-    />
-    <button id="sendBtn">ارسال</button>
+    <!-- Main Card Area (Assessment / Coach / Program / Sections) -->
+    <div id="card-area">
+      <!-- محتوا به‌صورت داینامیک توسط script.js رندر می‌شود -->
+    </div>
+
+    <!-- Input Area (Only for Assessment Phase) -->
+    <div id="input-area">
+      <input
+        type="number"
+        id="userInput"
+        min="1"
+        max="10"
+        placeholder="عدد ۱ تا ۱۰"
+        inputmode="numeric"
+      />
+      <button id="sendBtn">
+        ارسال
+      </button>
+    </div>
+
   </div>
-</div>
 
-<canvas id="confetti"></canvas>
+  <!-- Confetti Canvas (optional / future use) -->
+  <canvas id="confetti"></canvas>
 
-<script src="script.js"></script>
+  <!-- Main Script -->
+  <script src="script.js"></script>
+
 </body>
 </html>
