@@ -48,6 +48,7 @@ let answers = [];
  * DOM
  *************************/
 const cardArea = document.getElementById("card-area");
+const inputArea = document.getElementById("input-area");
 const input = document.getElementById("userInput");
 const sendBtn = document.getElementById("sendBtn");
 
@@ -105,11 +106,7 @@ function submitAnswer() {
 function analyzeAssessment() {
   const data = {};
   Object.keys(DIMENSIONS).forEach(k => {
-    data[k] = {
-      sum: 0,
-      count: 0,
-      importance: DIMENSIONS[k].importance
-    };
+    data[k] = { sum: 0, count: 0, importance: DIMENSIONS[k].importance };
   });
 
   answers.forEach(a => {
@@ -123,55 +120,29 @@ function analyzeAssessment() {
   Object.keys(DIMENSIONS).forEach(k => {
     const avg10 = data[k].sum / data[k].count;
     const score100 = Math.round(avg10 * 10);
-
     data[k].score = score100;
-    data[k].priority =
-      Math.round(data[k].importance * (100 - score100));
-
+    data[k].priority = Math.round(data[k].importance * (100 - score100));
     weightedSum += score100 * data[k].importance;
     importanceSum += data[k].importance;
   });
 
   data.overallScore = Math.round(weightedSum / importanceSum);
-  data.responseType = detectResponseType(data);
-
   return data;
 }
 
-function detectResponseType(data) {
-  const scores = Object.keys(DIMENSIONS).map(k => data[k].score);
-  const avg = scores.reduce((a,b)=>a+b,0) / scores.length;
-  const variance =
-    scores.reduce((a,b)=>a + Math.pow(b-avg,2),0) / scores.length;
-  const spread = Math.max(...scores) - Math.min(...scores);
-
-  if (avg < 50) return "سخت‌گیر با خود";
-  if (variance < 80) return "متعادل و پایدار";
-  if (spread > 40) return "نوسانی";
-  return "ایده‌آل‌گرا";
-}
-
 /*************************
- * COACH LOGIC
+ * COACH
  *************************/
 function getCoachInsight(data) {
   const selfScore = data.self.score;
 
-  let state;
   let message;
-
   if (selfScore < 70) {
-    state = "STABILIZE";
-    message =
-      "الان مهم‌ترین قدم تو، آرام‌سازی و خودشناسیه. لازم نیست خودتو هل بدی؛ اول باید زمین زیر پات سفت بشه.";
+    message = "الان تمرکز اصلی روی آرامش و خودشناسیه. عجله نکن.";
   } else if (selfScore < 85) {
-    state = "BUILD";
-    message =
-      "پایه‌ی خودشناسی‌ت خوبه. می‌تونیم همزمان با حفظ آرامش، روی رشد تدریجی یکی از بخش‌ها کار کنیم.";
+    message = "پایه خوبی داری. می‌تونیم رشد تدریجی رو شروع کنیم.";
   } else {
-    state = "EXECUTE";
-    message =
-      "خودشناسی‌ت در سطح بالاییه. بهترین کار الان تمرکز مستقیم روی ضعیف‌ترین بُعد و رشد هدفمنده.";
+    message = "آماده‌ای روی رشد هدفمند کار کنی.";
   }
 
   const focusKey =
@@ -179,16 +150,11 @@ function getCoachInsight(data) {
       .filter(k => k !== "self")
       .sort((a,b)=>data[b].priority - data[a].priority)[0];
 
-  return {
-    state,
-    message,
-    focusKey,
-    focusLabel: DIMENSIONS[focusKey].label
-  };
+  return { message, focusKey };
 }
 
 /*************************
- * RESULT UI
+ * RESULTS UI
  *************************/
 function showResults(data) {
   const coach = getCoachInsight(data);
@@ -198,68 +164,95 @@ function showResults(data) {
   Object.keys(DIMENSIONS).forEach(k => {
     html += `
       <div class="result-row">
-        <div class="result-label">
-          ${DIMENSIONS[k].label} — ${data[k].score}%
-        </div>
-        <div class="progress">
-          <div class="progress-fill" style="--value:${data[k].score}%"></div>
-        </div>
+        ${DIMENSIONS[k].label}: ${data[k].score}%
       </div>
     `;
   });
 
   html += `
-    <hr style="margin:20px 0">
-
-    <div class="result-row">
-      <strong>🎯 امتیاز کل:</strong> ${data.overallScore}%
-    </div>
-
-    <div class="result-row">
-      <strong>🧠 تیپ پاسخ‌دهی:</strong> ${data.responseType}
-    </div>
-
-    <hr style="margin:20px 0">
-
-    <div class="result-row">
-      <strong>👤 Coach:</strong><br>
-      ${coach.message}
-    </div>
-
-    <div class="result-row">
-      <strong>🎯 تمرکز پیشنهادی:</strong>
-      ${coach.focusLabel}
-    </div>
+    <hr>
+    <div><strong>🎯 امتیاز کل:</strong> ${data.overallScore}%</div>
+    <hr>
+    <div><strong>👤 Coach:</strong><br>${coach.message}</div>
 
     <button
-      onclick="startCoachProgram('${coach.focusKey}')"
-      style="
-        margin-top:20px;
-        width:100%;
-        padding:14px;
-        border:none;
-        border-radius:16px;
-        font-weight:bold;
-        cursor:pointer;
-        color:white;
-        background:linear-gradient(135deg,#ff8c1a,#ffb703);
-        box-shadow:0 12px 30px rgba(255,140,26,0.4);
-      "
-    >
-      🚀 ورود به برنامه رشد شخصی
+      onclick="startCoachProgram()"
+      style="margin-top:20px;width:100%;padding:14px;border:none;border-radius:16px;font-weight:bold;cursor:pointer;color:white;
+      background:linear-gradient(135deg,#ff8c1a,#ffb703);">
+      🚀 ورود به برنامه
     </button>
   `;
 
   html += `</div>`;
-
   cardArea.innerHTML = html;
-  document.getElementById("input-area").style.display = "none";
+  inputArea.style.display = "none";
 }
 
 /*************************
- * PROGRAM ENTRY
+ * PROGRAM (INSIDE APP)
  *************************/
-function startCoachProgram(focusKey) {
-  console.log("Start program for:", focusKey);
-  alert("مرحله بعد: ورود به برنامه عملی (" + DIMENSIONS[focusKey].label + ")");
+function startCoachProgram() {
+  cardArea.innerHTML = `
+    <div class="question-card">
+      <div class="question-text">📅 برنامه رشد روزانه</div>
+
+      ${programButton("عادت‌ساز", openHabitBuilder)}
+      ${programButton("ایجاد انگیزه", openMotivation)}
+      ${programButton("ایجاد آرامش", openCalm)}
+      ${programButton("کشف هدف", openGoalDiscovery)}
+      ${programButton("تقویت اراده", openWillpower)}
+    </div>
+  `;
+}
+
+function programButton(title, handler) {
+  return `
+    <button
+      onclick="${handler.name}()"
+      style="margin-top:12px;width:100%;padding:14px;border:none;border-radius:16px;
+      font-weight:bold;cursor:pointer;color:white;
+      background:linear-gradient(135deg,#ff8c1a,#ffb703);">
+      ${title}
+    </button>
+  `;
+}
+
+/*************************
+ * PROGRAM SECTIONS (EMPTY – READY)
+ *************************/
+function openHabitBuilder() {
+  showSection("عادت‌ساز", "هر روز روی ساخت یک عادت کوچک کار می‌کنیم.");
+}
+
+function openMotivation() {
+  showSection("ایجاد انگیزه", "تمرین‌های افزایش انگیزه و معنا.");
+}
+
+function openCalm() {
+  showSection("ایجاد آرامش", "تمرین‌های آرام‌سازی ذهن و بدن.");
+}
+
+function openGoalDiscovery() {
+  showSection("کشف هدف", "شفاف‌سازی مسیر و هدف شخصی.");
+}
+
+function openWillpower() {
+  showSection("تقویت اراده", "تمرین‌های تقویت تعهد و استمرار.");
+}
+
+function showSection(title, text) {
+  cardArea.innerHTML = `
+    <div class="question-card">
+      <div class="question-text">${title}</div>
+      <p style="margin-top:10px">${text}</p>
+
+      <button
+        onclick="startCoachProgram()"
+        style="margin-top:20px;width:100%;padding:14px;border:none;border-radius:16px;
+        font-weight:bold;cursor:pointer;color:white;
+        background:linear-gradient(135deg,#888,#aaa);">
+        ⬅ بازگشت به برنامه
+      </button>
+    </div>
+  `;
 }
