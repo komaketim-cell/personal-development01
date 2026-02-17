@@ -1,104 +1,168 @@
-const questions = [
-  { text: "چقدر احساساتت رو می‌شناسی؟", dimension: "mind" },
-  { text: "چقدر استرس روزانه‌ات رو مدیریت می‌کنی؟", dimension: "mind" },
-  { text: "چقدر ذهنت آرام است؟", dimension: "mind" },
-  { text: "چقدر به خودت مهربانی؟", dimension: "mind" },
-  { text: "چقدر افکارت منفی نیستند؟", dimension: "mind" },
+/*************************
+ * CONFIG
+ *************************/
+const QUESTIONS = [
+  // MIND
+  { text: "معمولاً ذهنت آرام است؟", dimension: "mind" },
+  { text: "می‌توانی افکارت را مدیریت کنی؟", dimension: "mind" },
+  { text: "استرس را خوب کنترل می‌کنی؟", dimension: "mind" },
+  { text: "در لحظه حال حضور داری؟", dimension: "mind" },
+  { text: "با احساساتت آشتی هستی؟", dimension: "mind" },
 
-  { text: "چقدر هدفت در زندگی مشخص است؟", dimension: "goal" },
-  { text: "چقدر انگیزه‌ی پایدار داری؟", dimension: "goal" },
-  { text: "چقدر به آینده‌ات امیدوار هستی؟", dimension: "goal" },
-  { text: "چقدر برای هدفت تلاش می‌کنی؟", dimension: "goal" },
-  { text: "چقدر می‌دانی چه می‌خواهی؟", dimension: "goal" },
+  // GOAL
+  { text: "هدفت در زندگی شفاف است؟", dimension: "goal" },
+  { text: "برای آینده برنامه داری؟", dimension: "goal" },
+  { text: "تصمیم‌هایت هدفمندند؟", dimension: "goal" },
+  { text: "می‌دانی چه می‌خواهی؟", dimension: "goal" },
+  { text: "پیشرفتت را می‌سنجی؟", dimension: "goal" },
 
-  { text: "چقدر عادت‌های منظمی داری؟", dimension: "habit" },
-  { text: "چقدر برنامه‌ریزی می‌کنی؟", dimension: "habit" },
-  { text: "چقدر به برنامه‌ات پایبندی؟", dimension: "habit" },
-  { text: "چقدر اهمال‌کاری نداری؟", dimension: "habit" },
-  { text: "چقدر کارهایت را کامل می‌کنی؟", dimension: "habit" },
+  // HABIT
+  { text: "عادت‌های مثبتی داری؟", dimension: "habit" },
+  { text: "پایبند به روتین هستی؟", dimension: "habit" },
+  { text: "کارها را عقب نمی‌اندازی؟", dimension: "habit" },
+  { text: "استمرار داری؟", dimension: "habit" },
+  { text: "خودکنترلی خوبی داری؟", dimension: "habit" },
 
-  { text: "چقدر خودت را می‌شناسی؟", dimension: "self" },
-  { text: "چقدر نقاط قوتت را می‌دانی؟", dimension: "self" },
-  { text: "چقدر نقاط ضعفت را پذیرفتی؟", dimension: "self" },
-  { text: "چقدر با خودت صادقی؟", dimension: "self" },
-  { text: "چقدر از درونت آگاهی داری؟", dimension: "self" }
+  // SELF
+  { text: "خودت را خوب می‌شناسی؟", dimension: "self" },
+  { text: "نقاط قوتت را می‌دانی؟", dimension: "self" },
+  { text: "نقاط ضعفت را پذیرفته‌ای؟", dimension: "self" },
+  { text: "با خودت صادقی؟", dimension: "self" },
+  { text: "خودت را دوست داری؟", dimension: "self" }
 ];
 
 const DIMENSIONS = {
-  mind: { label: "ذهن و احساسات", importance: 1.3 },
-  goal: { label: "هدف و انگیزه", importance: 1.1 },
-  habit: { label: "نظم و عادت‌ها", importance: 1.2 },
-  self: { label: "خودشناسی", importance: 1.0 }
+  mind:  { label: "ذهن", importance: 1.1 },
+  goal:  { label: "هدف", importance: 1.3 },
+  habit: { label: "عادت", importance: 1.4 },
+  self:  { label: "خودشناسی", importance: 1.5 }
 };
 
-let current = 0;
-const answers = [];
+/*************************
+ * STATE
+ *************************/
+let currentQuestion = 0;
+let answers = [];
 
+/*************************
+ * DOM
+ *************************/
 const cardArea = document.getElementById("card-area");
 const input = document.getElementById("userInput");
-const btn = document.getElementById("sendBtn");
+const sendBtn = document.getElementById("sendBtn");
 
+/*************************
+ * INIT
+ *************************/
 renderQuestion();
 
+/*************************
+ * EVENTS
+ *************************/
+sendBtn.addEventListener("click", submitAnswer);
 input.addEventListener("keydown", e => {
   if (e.key === "Enter") submitAnswer();
 });
-btn.onclick = submitAnswer;
 
+/*************************
+ * QUESTION FLOW
+ *************************/
 function renderQuestion() {
+  const q = QUESTIONS[currentQuestion];
   cardArea.innerHTML = `
     <div class="question-card">
       <div class="question-number">
-        سؤال ${current + 1} از ${questions.length}
+        سوال ${currentQuestion + 1} از ${QUESTIONS.length}
       </div>
-      <div class="question-text">${questions[current].text}</div>
+      <div class="question-text">${q.text}</div>
     </div>
   `;
+  input.value = "";
+  input.focus();
 }
 
 function submitAnswer() {
   const value = Number(input.value);
-  if (!value || value < 1 || value > 10) return;
+  if (value < 1 || value > 10) return;
 
-  answers.push({ value, dimension: questions[current].dimension });
-  input.value = "";
+  answers.push({
+    dimension: QUESTIONS[currentQuestion].dimension,
+    value
+  });
 
-  const card = document.querySelector(".question-card");
-  card.classList.add("card-exit");
+  currentQuestion++;
 
-  setTimeout(() => {
-    current++;
-    current < questions.length ? renderQuestion() : showResult();
-  }, 400);
+  if (currentQuestion < QUESTIONS.length) {
+    renderQuestion();
+  } else {
+    showResults(analyzeAssessment());
+  }
 }
 
+/*************************
+ * ANALYSIS
+ *************************/
 function analyzeAssessment() {
   const data = {};
-  Object.keys(DIMENSIONS).forEach(k => data[k] = { sum: 0, count: 0 });
+  Object.keys(DIMENSIONS).forEach(k => {
+    data[k] = {
+      sum: 0,
+      count: 0,
+      importance: DIMENSIONS[k].importance
+    };
+  });
 
   answers.forEach(a => {
     data[a.dimension].sum += a.value;
     data[a.dimension].count++;
   });
 
-  Object.keys(data).forEach(k => {
-    const avg = data[k].sum / data[k].count;
-    data[k].score = Math.round(avg * 10);
+  let weightedSum = 0;
+  let importanceSum = 0;
+
+  Object.keys(DIMENSIONS).forEach(k => {
+    const avg10 = data[k].sum / data[k].count;
+    const score100 = Math.round(avg10 * 10);
+
+    data[k].score = score100;
+    data[k].priority =
+      Math.round(data[k].importance * (100 - score100));
+
+    weightedSum += score100 * data[k].importance;
+    importanceSum += data[k].importance;
   });
+
+  data.overallScore = Math.round(weightedSum / importanceSum);
+  data.responseType = detectResponseType(data);
 
   return data;
 }
 
-function showResult() {
-  const data = analyzeAssessment();
-  launchConfetti();
+function detectResponseType(data) {
+  const scores = Object.keys(DIMENSIONS).map(k => data[k].score);
+  const avg = scores.reduce((a,b)=>a+b,0) / scores.length;
+  const variance =
+    scores.reduce((a,b)=>a + Math.pow(b-avg,2),0) / scores.length;
+  const spread = Math.max(...scores) - Math.min(...scores);
 
-  let html = `<div class="question-card"><strong>🎉 نتیجه ارزیابی</strong><br><br>`;
+  if (avg < 50) return "سخت‌گیر با خود";
+  if (variance < 80) return "متعادل و پایدار";
+  if (spread > 40) return "نوسانی";
+  return "ایده‌آل‌گرا";
+}
 
-  Object.keys(data).forEach(k => {
+/*************************
+ * RESULT UI (Progress Bars)
+ *************************/
+function showResults(data) {
+  let html = `<div class="question-card">`;
+
+  Object.keys(DIMENSIONS).forEach(k => {
     html += `
       <div class="result-row">
-        <div class="result-label">${DIMENSIONS[k].label} – ${data[k].score}%</div>
+        <div class="result-label">
+          ${DIMENSIONS[k].label} — ${data[k].score}%
+        </div>
         <div class="progress">
           <div class="progress-fill" style="--value:${data[k].score}%"></div>
         </div>
@@ -106,33 +170,31 @@ function showResult() {
     `;
   });
 
+  html += `
+    <hr style="margin:20px 0">
+
+    <div class="result-row">
+      <strong>🎯 امتیاز کل:</strong>
+      ${data.overallScore}%
+    </div>
+
+    <div class="result-row">
+      <strong>🧠 تیپ پاسخ‌دهی:</strong>
+      ${data.responseType}
+    </div>
+
+    <div class="result-row">
+      <strong>🚀 اولویت رشد:</strong>
+      ${Object.keys(DIMENSIONS)
+        .sort((a,b)=>data[b].priority - data[a].priority)
+        .map(k => DIMENSIONS[k].label)
+        .join(" → ")
+      }
+    </div>
+  `;
+
   html += `</div>`;
+
   cardArea.innerHTML = html;
-}
-
-/* ✅ Confetti Effect */
-function launchConfetti() {
-  const canvas = document.getElementById("confetti");
-  const ctx = canvas.getContext("2d");
-  canvas.width = innerWidth;
-  canvas.height = innerHeight;
-
-  const pieces = Array.from({ length: 120 }, () => ({
-    x: Math.random() * canvas.width,
-    y: Math.random() * -canvas.height,
-    r: Math.random() * 6 + 4,
-    s: Math.random() * 4 + 2
-  }));
-
-  function draw() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    pieces.forEach(p => {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y += p.s, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `hsl(${Math.random()*40+20},100%,60%)`;
-      ctx.fill();
-    });
-    requestAnimationFrame(draw);
-  }
-  draw();
+  document.getElementById("input-area").style.display = "none";
 }
