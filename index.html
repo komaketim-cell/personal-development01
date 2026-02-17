@@ -1,31 +1,241 @@
-<!DOCTYPE html>
-<html lang="fa">
-<head>
-  <meta charset="UTF-8" />
-  <title>Growth Assessment</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
+/*************************************************
+ * CONFIG
+ *************************************************/
 
-<div id="app">
-  <div id="header">🌱 ارزیابی رشد فردی</div>
+const DIMENSIONS = {
+  selfAwareness: { label: "خودشناسی", importance: 1.4 },
+  habits:        { label: "عادت‌ها", importance: 1.2 },
+  mindset:       { label: "ذهنیت", importance: 1.3 },
+  goals:         { label: "هدف‌گذاری", importance: 1.1 }
+};
 
-  <div id="card-area"></div>
+const QUESTIONS = [
+  { text: "احساساتم را به‌خوبی می‌شناسم", dimension: "selfAwareness" },
+  { text: "الگوهای رفتاری خودم را می‌فهمم", dimension: "selfAwareness" },
 
-  <div id="input-area">
-    <input
-      type="number"
-      id="userInput"
-      min="1"
-      max="10"
-      placeholder="عدد ۱ تا ۱۰"
-    />
-    <button id="sendBtn">ارسال</button>
-  </div>
-</div>
+  { text: "عادت‌های روزانه‌ی من پایدار هستند", dimension: "habits" },
+  { text: "می‌توانم عادت بد را کنترل کنم", dimension: "habits" },
 
-<canvas id="confetti"></canvas>
+  { text: "در شرایط سخت ذهنم آرام می‌ماند", dimension: "mindset" },
+  { text: "نگرش مثبتی به آینده دارم", dimension: "mindset" },
 
-<script src="script.js"></script>
-</body>
-</html>
+  { text: "اهدافم واضح و مشخص هستند", dimension: "goals" },
+  { text: "برای اهدافم برنامه دارم", dimension: "goals" }
+];
+
+/*************************************************
+ * STATE
+ *************************************************/
+
+let state = {
+  index: 0,
+  answers: []
+};
+
+/*************************************************
+ * INIT
+ *************************************************/
+
+renderQuestion();
+
+/*************************************************
+ * RENDER QUESTION
+ *************************************************/
+
+function renderQuestion() {
+  const q = QUESTIONS[state.index];
+  const cardArea = document.getElementById("cardArea");
+
+  cardArea.innerHTML = `
+    <div class="question-card">
+      <p>${q.text}</p>
+      <div class="options">
+        ${[1,2,3,4,5].map(v =>
+          `<button onclick="answer(${v})">${v}</button>`
+        ).join("")}
+      </div>
+    </div>
+  `;
+
+  updateProgress();
+}
+
+/*************************************************
+ * ANSWER
+ *************************************************/
+
+function answer(value) {
+  state.answers.push({
+    ...QUESTIONS[state.index],
+    value
+  });
+
+  state.index++;
+
+  if (state.index < QUESTIONS.length) {
+    renderQuestion();
+  } else {
+    analyzeAssessment();
+  }
+}
+
+/*************************************************
+ * PROGRESS
+ *************************************************/
+
+function updateProgress() {
+  const percent = ((state.index) / QUESTIONS.length) * 100;
+  document.getElementById("progressFill").style.width = percent + "%";
+}
+
+/*************************************************
+ * ANALYSIS
+ *************************************************/
+
+function analyzeAssessment() {
+  const data = {};
+
+  Object.keys(DIMENSIONS).forEach(k => {
+    data[k] = {
+      total: 0,
+      count: 0
+    };
+  });
+
+  state.answers.forEach(a => {
+    data[a.dimension].total += a.value;
+    data[a.dimension].count++;
+  });
+
+  Object.keys(DIMENSIONS).forEach(k => {
+    const avg = data[k].total / data[k].count;
+    const score = Math.round((avg / 5) * 100);
+
+    data[k].score = score;
+    data[k].priority =
+      DIMENSIONS[k].importance * (100 - score);
+
+    const interp = interpretDimension(score);
+    data[k].state = interp.state;
+    data[k].stateLabel = interp.label;
+    data[k].coachHint = interp.coachMessage;
+  });
+
+  showResult(data);
+}
+
+/*************************************************
+ * COACH INTERPRETATION (FINAL)
+ *************************************************/
+
+function interpretDimension(score) {
+  if (score < 40) {
+    return {
+      state: "STABILIZE",
+      label: "نیاز به تثبیت",
+      coachMessage: "اول آرام‌سازی و بازسازی پایه‌ها"
+    };
+  }
+
+  if (score < 70) {
+    return {
+      state: "GROW",
+      label: "بهترین اهرم رشد ✅",
+      coachMessage: "اینجا بیشترین بازده رشد را داری"
+    };
+  }
+
+  return {
+    state: "MAINTAIN",
+    label: "نقطه قوت",
+    coachMessage: "حفظ و بهینه‌سازی"
+  };
+}
+
+/*************************************************
+ * PICK COACH FOCUS
+ *************************************************/
+
+function pickCoachFocus(data) {
+  const grow = Object.keys(DIMENSIONS)
+    .filter(k => data[k].state === "GROW")
+    .sort((a,b)=>data[b].priority - data[a].priority);
+
+  if (grow.length) return grow[0];
+
+  const stabilize = Object.keys(DIMENSIONS)
+    .filter(k => data[k].state === "STABILIZE")
+    .sort((a,b)=>data[b].priority - data[a].priority);
+
+  return stabilize[0];
+}
+
+/*************************************************
+ * SHOW RESULT
+ *************************************************/
+
+function showResult(data) {
+  const cardArea = document.getElementById("cardArea");
+  const focusKey = pickCoachFocus(data);
+
+  let html = `<h2>📊 نتیجه ارزیابی</h2>`;
+
+  Object.keys(DIMENSIONS).forEach(k => {
+    html += `
+      <div class="result-row">
+        <strong>${DIMENSIONS[k].label}:</strong>
+        ${data[k].score}٪
+        <br>
+        <small>${data[k].stateLabel} – ${data[k].coachHint}</small>
+      </div>
+    `;
+  });
+
+  html += `
+    <hr style="margin:20px 0">
+
+    <div class="result-row">
+      <strong>🧠 تمرکز مربی:</strong><br>
+      ${DIMENSIONS[focusKey].label}
+      <br>
+      <small>${data[focusKey].coachHint}</small>
+    </div>
+
+    <div style="margin-top:30px;text-align:center">
+      <button id="enterProgramBtn"
+        style="
+          padding:14px 28px;
+          font-size:16px;
+          border-radius:12px;
+          border:none;
+          cursor:pointer;
+          background:linear-gradient(135deg,#6a5cff,#8f7bff);
+          color:#fff;
+          box-shadow:0 10px 25px rgba(0,0,0,0.15);
+        ">
+        🚀 ورود به برنامه رشد شخصی
+      </button>
+    </div>
+  `;
+
+  cardArea.innerHTML = html;
+
+  document
+    .getElementById("enterProgramBtn")
+    .addEventListener("click", () => {
+      startCoachProgram(focusKey, data);
+    });
+}
+
+/*************************************************
+ * NEXT STEP HOOK
+ *************************************************/
+
+function startCoachProgram(focusKey, data) {
+  console.log("Coach program started:", focusKey, data);
+
+  // مرحله بعد:
+  // ✅ گفتگوی پویا با Coach
+  // ✅ برنامه ۷ روزه
+  // ✅ تمرین‌های روزانه
+}
