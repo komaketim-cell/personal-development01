@@ -249,8 +249,89 @@ const openMotivation = () => showSection("⚡ ایجاد انگیزه","اتصا
 const openCalm       = () => showSection("🌿 ایجاد آرامش","تنظیم ذهن و سیستم عصبی.");
 const openGoal       = () => showSection("🎯 کشف هدف","شفاف‌سازی مسیر زندگی.");
 const openWill       = () => showSection("💪 تقویت اراده","تمرین تعهد و استمرار.");
-const openGratitude  = () => showSection("🙏 شکرگزاری","تمرین دیدن داشته‌ها و قدردانی.");
 const openBelief     = () => showSection("🧠 اصلاح باورها","شناسایی و بازنویسی باورهای محدودکننده.");
+
+/*************************
+ * ✅ GRATITUDE (UPGRADED)
+ *************************/
+const openGratitude = () => {
+  cardArea.innerHTML = `
+    <div class="question-card">
+      <div class="question-text">🙏 شکرگزاری</div>
+
+      ${programSubBtn("📖 چرا شکرگزاری؟", "openWhyGratitude", "#8360c3,#2ebf91")}
+      ${programSubBtn("🤍 با هم شکرگزاری کنیم", "openGratitudePractice", "#56ab2f,#a8e063")}
+
+      <button onclick="startProgram()" style="${backBtnStyle()}">
+        ⬅ بازگشت
+      </button>
+    </div>
+  `;
+};
+
+function programSubBtn(title, fn, gradient) {
+  return `
+    <div onclick="${fn}()" style="
+      margin-top:14px;
+      padding:14px;
+      border-radius:16px;
+      cursor:pointer;
+      color:white;
+      font-weight:bold;
+      background:linear-gradient(135deg,${gradient});
+      text-align:center;
+    ">
+      ${title}
+    </div>
+  `;
+}
+
+function openWhyGratitude() {
+  cardArea.innerHTML = `
+    <div class="question-card">
+      <div class="question-text">📖 چرا شکرگزاری؟</div>
+
+      <div style="margin-top:12px; line-height:1.9">
+        <p>
+          شکرگزاری تمرینی قدرتمند برای افزایش آرامش،
+          رضایت درونی و حضور در لحظه حال است.
+        </p>
+      </div>
+
+      <button onclick="openGratitude()" style="${backBtnStyle()}">
+        ⬅ بازگشت
+      </button>
+    </div>
+  `;
+}
+
+function openGratitudePractice() {
+  const listHTML = GRATITUDE_LIST.map(item => `
+    <div style="
+      background:#f7f7f7;
+      border-radius:14px;
+      padding:12px;
+      margin-top:10px;
+      font-size:14px;
+    ">
+      ${item}
+    </div>
+  `).join("");
+
+  cardArea.innerHTML = `
+    <div class="question-card">
+      <div class="question-text">🤍 با هم شکرگزاری کنیم</div>
+
+      <div style="max-height:320px; overflow-y:auto; margin-top:12px">
+        ${listHTML}
+      </div>
+
+      <button onclick="openGratitude()" style="${backBtnStyle()}">
+        ⬅ بازگشت
+      </button>
+    </div>
+  `;
+}
 
 /*************************
  * STYLES
