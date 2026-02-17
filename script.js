@@ -2,28 +2,24 @@
  * CONFIG
  *************************/
 const QUESTIONS = [
-  // MIND
   { text: "معمولاً ذهنت آرام است؟", dimension: "mind" },
   { text: "می‌توانی افکارت را مدیریت کنی؟", dimension: "mind" },
   { text: "استرس را خوب کنترل می‌کنی؟", dimension: "mind" },
   { text: "در لحظه حال حضور داری؟", dimension: "mind" },
   { text: "با احساساتت آشتی هستی؟", dimension: "mind" },
 
-  // GOAL
   { text: "هدفت در زندگی شفاف است؟", dimension: "goal" },
   { text: "برای آینده برنامه داری؟", dimension: "goal" },
   { text: "تصمیم‌هایت هدفمندند؟", dimension: "goal" },
   { text: "می‌دانی چه می‌خواهی؟", dimension: "goal" },
   { text: "پیشرفتت را می‌سنجی؟", dimension: "goal" },
 
-  // HABIT
   { text: "عادت‌های مثبتی داری؟", dimension: "habit" },
   { text: "پایبند به روتین هستی؟", dimension: "habit" },
   { text: "کارها را عقب نمی‌اندازی؟", dimension: "habit" },
   { text: "استمرار داری؟", dimension: "habit" },
   { text: "خودکنترلی خوبی داری؟", dimension: "habit" },
 
-  // SELF
   { text: "خودت را خوب می‌شناسی؟", dimension: "self" },
   { text: "نقاط قوتت را می‌دانی؟", dimension: "self" },
   { text: "نقاط ضعفت را پذیرفته‌ای؟", dimension: "self" },
@@ -61,9 +57,7 @@ renderQuestion();
  * EVENTS
  *************************/
 sendBtn.addEventListener("click", submitAnswer);
-input.addEventListener("keydown", e => {
-  if (e.key === "Enter") submitAnswer();
-});
+input.addEventListener("keydown", e => e.key === "Enter" && submitAnswer());
 
 /*************************
  * QUESTION FLOW
@@ -86,18 +80,12 @@ function submitAnswer() {
   const value = Number(input.value);
   if (value < 1 || value > 10) return;
 
-  answers.push({
-    dimension: QUESTIONS[currentQuestion].dimension,
-    value
-  });
-
+  answers.push({ dimension: QUESTIONS[currentQuestion].dimension, value });
   currentQuestion++;
 
-  if (currentQuestion < QUESTIONS.length) {
-    renderQuestion();
-  } else {
-    showResults(analyzeAssessment());
-  }
+  currentQuestion < QUESTIONS.length
+    ? renderQuestion()
+    : showResults(analyzeAssessment());
 }
 
 /*************************
@@ -118,11 +106,11 @@ function analyzeAssessment() {
   let importanceSum = 0;
 
   Object.keys(DIMENSIONS).forEach(k => {
-    const avg10 = data[k].sum / data[k].count;
-    const score100 = Math.round(avg10 * 10);
-    data[k].score = score100;
-    data[k].priority = Math.round(data[k].importance * (100 - score100));
-    weightedSum += score100 * data[k].importance;
+    const avg = data[k].sum / data[k].count;
+    const score = Math.round(avg * 10);
+    data[k].score = score;
+    data[k].priority = Math.round(data[k].importance * (100 - score));
+    weightedSum += score * data[k].importance;
     importanceSum += data[k].importance;
   });
 
@@ -134,125 +122,129 @@ function analyzeAssessment() {
  * COACH
  *************************/
 function getCoachInsight(data) {
-  const selfScore = data.self.score;
+  const self = data.self.score;
+  let message =
+    self < 70
+      ? "الان تمرکز اصلی روی آرامش و خودشناسیه."
+      : self < 85
+      ? "پایه خوبی داری. رشد تدریجی بهترین انتخابه."
+      : "آماده اجرای رشد هدفمند هستی.";
 
-  let message;
-  if (selfScore < 70) {
-    message = "الان تمرکز اصلی روی آرامش و خودشناسیه. عجله نکن.";
-  } else if (selfScore < 85) {
-    message = "پایه خوبی داری. می‌تونیم رشد تدریجی رو شروع کنیم.";
-  } else {
-    message = "آماده‌ای روی رشد هدفمند کار کنی.";
-  }
-
-  const focusKey =
-    Object.keys(DIMENSIONS)
-      .filter(k => k !== "self")
-      .sort((a,b)=>data[b].priority - data[a].priority)[0];
-
-  return { message, focusKey };
+  return { message };
 }
 
 /*************************
- * RESULTS UI
+ * RESULTS
  *************************/
 function showResults(data) {
   const coach = getCoachInsight(data);
 
   let html = `<div class="question-card">`;
-
   Object.keys(DIMENSIONS).forEach(k => {
-    html += `
-      <div class="result-row">
-        ${DIMENSIONS[k].label}: ${data[k].score}%
-      </div>
-    `;
+    html += `<div class="result-row">${DIMENSIONS[k].label}: ${data[k].score}%</div>`;
   });
 
   html += `
     <hr>
-    <div><strong>🎯 امتیاز کل:</strong> ${data.overallScore}%</div>
+    <strong>🎯 امتیاز کل: ${data.overallScore}%</strong>
     <hr>
-    <div><strong>👤 Coach:</strong><br>${coach.message}</div>
-
-    <button
-      onclick="startCoachProgram()"
-      style="margin-top:20px;width:100%;padding:14px;border:none;border-radius:16px;font-weight:bold;cursor:pointer;color:white;
-      background:linear-gradient(135deg,#ff8c1a,#ffb703);">
-      🚀 ورود به برنامه
+    <div>👤 Coach:<br>${coach.message}</div>
+    <button onclick="startProgram()" style="${mainBtnStyle()}">
+      🚀 ورود به برنامه رشد
     </button>
-  `;
+  </div>`;
 
-  html += `</div>`;
   cardArea.innerHTML = html;
   inputArea.style.display = "none";
 }
 
 /*************************
- * PROGRAM (INSIDE APP)
+ * PROGRAM
  *************************/
-function startCoachProgram() {
+function startProgram() {
   cardArea.innerHTML = `
     <div class="question-card">
-      <div class="question-text">📅 برنامه رشد روزانه</div>
-
-      ${programButton("عادت‌ساز", openHabitBuilder)}
-      ${programButton("ایجاد انگیزه", openMotivation)}
-      ${programButton("ایجاد آرامش", openCalm)}
-      ${programButton("کشف هدف", openGoalDiscovery)}
-      ${programButton("تقویت اراده", openWillpower)}
+      <div class="question-text">📅 برنامه رشد شخصی</div>
+      ${programCard("🔥","عادت‌ساز","openHabit","#ff7a18,#ffb347")}
+      ${programCard("⚡","ایجاد انگیزه","openMotivation","#f953c6,#b91d73")}
+      ${programCard("🌿","ایجاد آرامش","openCalm","#43cea2,#185a9d")}
+      ${programCard("🎯","کشف هدف","openGoal","#f7971e,#ffd200")}
+      ${programCard("💪","تقویت اراده","openWill","#11998e,#38ef7d")}
+      ${programCard("🙏","شکرگزاری","openGratitude","#56ab2f,#a8e063")}
+      ${programCard("🧠","اصلاح باورها","openBelief","#8360c3,#2ebf91")}
     </div>
   `;
 }
 
-function programButton(title, handler) {
+function programCard(icon,title,fn,gradient) {
   return `
-    <button
-      onclick="${handler.name}()"
-      style="margin-top:12px;width:100%;padding:14px;border:none;border-radius:16px;
-      font-weight:bold;cursor:pointer;color:white;
-      background:linear-gradient(135deg,#ff8c1a,#ffb703);">
-      ${title}
-    </button>
+    <div onclick="${fn}()" style="
+      margin-top:14px;
+      padding:16px;
+      border-radius:18px;
+      cursor:pointer;
+      color:white;
+      font-weight:bold;
+      background:linear-gradient(135deg,${gradient});
+      display:flex;
+      align-items:center;
+      gap:12px;
+    ">
+      <div style="font-size:26px">${icon}</div>
+      <div>${title}</div>
+    </div>
   `;
 }
 
 /*************************
- * PROGRAM SECTIONS (EMPTY – READY)
+ * SECTIONS
  *************************/
-function openHabitBuilder() {
-  showSection("عادت‌ساز", "هر روز روی ساخت یک عادت کوچک کار می‌کنیم.");
-}
-
-function openMotivation() {
-  showSection("ایجاد انگیزه", "تمرین‌های افزایش انگیزه و معنا.");
-}
-
-function openCalm() {
-  showSection("ایجاد آرامش", "تمرین‌های آرام‌سازی ذهن و بدن.");
-}
-
-function openGoalDiscovery() {
-  showSection("کشف هدف", "شفاف‌سازی مسیر و هدف شخصی.");
-}
-
-function openWillpower() {
-  showSection("تقویت اراده", "تمرین‌های تقویت تعهد و استمرار.");
-}
-
-function showSection(title, text) {
+function showSection(title,text) {
   cardArea.innerHTML = `
     <div class="question-card">
       <div class="question-text">${title}</div>
       <p style="margin-top:10px">${text}</p>
-
-      <button
-        onclick="startCoachProgram()"
-        style="margin-top:20px;width:100%;padding:14px;border:none;border-radius:16px;
-        font-weight:bold;cursor:pointer;color:white;
-        background:linear-gradient(135deg,#888,#aaa);">
-        ⬅ بازگشت به برنامه
+      <button onclick="startProgram()" style="${backBtnStyle()}">
+        ⬅ بازگشت
       </button>
     </div>
+  `;
+}
+
+const openHabit      = () => showSection("🔥 عادت‌ساز","ساخت عادت‌های کوچک روزانه.");
+const openMotivation = () => showSection("⚡ ایجاد انگیزه","اتصال به معنا و انرژی درونی.");
+const openCalm       = () => showSection("🌿 ایجاد آرامش","تنظیم ذهن و سیستم عصبی.");
+const openGoal       = () => showSection("🎯 کشف هدف","شفاف‌سازی مسیر زندگی.");
+const openWill       = () => showSection("💪 تقویت اراده","تمرین تعهد و استمرار.");
+const openGratitude  = () => showSection("🙏 شکرگزاری","تمرین دیدن داشته‌ها و قدردانی.");
+const openBelief     = () => showSection("🧠 اصلاح باورها","شناسایی و بازنویسی باورهای محدودکننده.");
+
+/*************************
+ * STYLES
+ *************************/
+function mainBtnStyle() {
+  return `
+    margin-top:20px;
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:16px;
+    font-weight:bold;
+    cursor:pointer;
+    color:white;
+    background:linear-gradient(135deg,#ff8c1a,#ffb703);
+  `;
+}
+
+function backBtnStyle() {
+  return `
+    margin-top:20px;
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:16px;
+    font-weight:bold;
+    cursor:pointer;
+    background:#eee;
   `;
 }
