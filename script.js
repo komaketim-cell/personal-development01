@@ -1,131 +1,442 @@
-/***********************
- * MAIN MENU
- ***********************/
-function showMainMenu() {
-  const card = `
-    <div class="question-card">
-      <div class="question-text">
-        به برنامه رشد فردی خوش آمدی 🌱  
-        لطفاً یک بخش را انتخاب کن:
-      </div>
-    </div>
-  `;
-
-  document.getElementById("card-area").innerHTML = card;
-
-  document.getElementById("input-area").innerHTML = `
-    <button onclick="startAssessment()">ارزیابی</button>
-    <button onclick="startGratitude()">شکرگزاری</button>
-    <button onclick="startBeliefCorrection()">اصلاح باورها</button>
-  `;
-}
-
-/***********************
- * GRATITUDE (existing)
- ***********************/
+/*************************
+ * GRATITUDE DATA
+ *************************/
 const GRATITUDE_LIST = [
-  "خدایا شکرت بابت امروز",
-  "خدایا شکرت بابت سلامتی",
-  "خدایا شکرت بابت فرصت دوباره"
+  "خدایا شکرت برای نفس کشیدن در این لحظه.",
+  "خدایا شکرت برای سلامتی بدنم.",
+  "خدایا شکرت برای قلبی که بی‌وقفه برایم می‌تپد.",
+  "خدایا شکرت برای ذهنی که می‌تواند فکر کند و یاد بگیرد.",
+  "خدایا شکرت برای فرصت یک روز تازه.",
+  "خدایا شکرت برای خانواده‌ام.",
+  "خدایا شکرت برای دوستان واقعی زندگی‌ام.",
+  "خدایا شکرت برای تجربه‌هایی که مرا قوی‌تر کردند.",
+  "خدایا شکرت برای اشتباهاتی که به من درس دادند.",
+  "خدایا شکرت برای توانایی تغییر در خودم.",
+  "خدایا شکرت برای سقفی که بالای سرم دارم.",
+  "خدایا شکرت برای غذایی که روی سفره‌ام قرار می‌گیرد.",
+  "خدایا شکرت برای آبی که می‌نوشم.",
+  "خدایا شکرت برای خوابی که شب‌ها تجربه می‌کنم.",
+  "خدایا شکرت برای آرامشی که در درونم شکل می‌گیرد.",
+  "خدایا شکرت برای طبیعت زیبا.",
+  "خدایا شکرت برای نور خورشید.",
+  "خدایا شکرت برای باران آرام‌بخش.",
+  "خدایا شکرت برای هوای تازه.",
+  "خدایا شکرت برای توانایی حرکت کردن.",
+  "خدایا شکرت برای فرصت یادگیری.",
+  "خدایا شکرت برای کتاب‌هایی که مسیرم را روشن می‌کنند.",
+  "خدایا شکرت برای استادانی که راهنمایم بودند.",
+  "خدایا شکرت برای مهارت‌هایی که کسب کرده‌ام.",
+  "خدایا شکرت برای امیدی که در دلم زنده است.",
+  "خدایا شکرت برای ایمان درونی‌ام.",
+  "خدایا شکرت برای این لحظه، همین حالا، همین‌جا."
 ];
 
-let gratitudeIndex = 0;
-
-function startGratitude() {
-  gratitudeIndex = 0;
-  showGratitudeCard();
-}
-
-function showGratitudeCard() {
-  const card = `
-    <div class="question-card">
-      <div class="question-number">شکرگزاری ${gratitudeIndex + 1} از ${GRATITUDE_LIST.length}</div>
-      <div class="question-text">${GRATITUDE_LIST[gratitudeIndex]}</div>
-    </div>
-  `;
-
-  document.getElementById("card-area").innerHTML = card;
-
-  document.getElementById("input-area").innerHTML = `
-    <button onclick="prevGratitude()">⬅ قبلی</button>
-    <button onclick="nextGratitude()">🤍 خدایا شکرت</button>
-    <button onclick="showMainMenu()">🏠 منوی اصلی</button>
-  `;
-}
-
-function nextGratitude() {
-  if (gratitudeIndex < GRATITUDE_LIST.length - 1) {
-    gratitudeIndex++;
-    showGratitudeCard();
-  }
-}
-
-function prevGratitude() {
-  if (gratitudeIndex > 0) {
-    gratitudeIndex--;
-    showGratitudeCard();
-  }
-}
-
-/***********************
- * ✅ BELIEF CORRECTION (NEW)
- ***********************/
+/*************************
+ * ✅ BELIEF DATA (NEW)
+ *************************/
 const BELIEF_LIST = [
-  "تا حالا فکر می‌کردم نمی‌تونم تغییر کنم؛ حالا می‌فهمم چقدر اشتباه می‌کردم، چون آدم می‌تونه از همون لحظه‌ای که بخواد، کم‌کم عوض بشه.",
-  "تا حالا باورم این بود که برای شروع دیر شده؛ حالا می‌بینم این فکر فقط منو نگه داشته بود و همیشه میشه از امروز شروع کرد.",
-  "تا حالا فکر می‌کردم من آدم قوی‌ای نیستم؛ اما حالا می‌فهمم همین که دوام آوردم یعنی خیلی هم قوی‌تر از چیزی‌ام که فکر می‌کردم.",
-  "تا حالا خیال می‌کردم گذشته‌م همه‌چیزو خراب کرده؛ حالا می‌بینم گذشته فقط یه بخش از داستان بوده، نه پایانش.",
-  "تا حالا فکر می‌کردم از پس مشکلات برنمیام؛ اما حالا می‌فهمم خیلی وقت‌ها بیشتر از چیزی که فکر می‌کردم توان داشتم.",
-  "تا حالا باور داشتم اعتمادبه‌نفس ندارم؛ حالا می‌فهمم اعتمادبه‌نفس ساختنیه، نه ذاتی.",
-  "تا حالا فکر می‌کردم هیچ استعدادی ندارم؛ حالا می‌بینم با تمرین، خیلی چیزها تو من رشد کرده.",
-  "تا حالا خیال می‌کردم همیشه بدشانسم؛ حالا می‌فهمم خیلی از نتیجه‌ها به انتخاب‌های خودم ربط داشته.",
-  "تا حالا فکر می‌کردم همیشه شکست می‌خورم؛ اما حالا می‌بینم هر بار فقط داشتم یاد می‌گرفتم.",
-  "تا حالا باورم این بود که من به اندازه کافی خوب نیستم؛ حالا می‌فهمم این فقط یه فکر اشتباه بوده که جلوی رشدمو گرفته."
+  "من توانایی تغییر باورهای محدودکننده‌ام را دارم.",
+  "گذشته‌ام هویت امروز مرا محدود نمی‌کند.",
+  "من شایسته رشد، موفقیت و آرامش هستم.",
+  "اشتباهاتم بخشی از مسیر یادگیری من هستند.",
+  "من می‌توانم متفاوت فکر کنم و متفاوت عمل کنم.",
+  "باورهایم قابل بازنویسی هستند.",
+  "من کنترل واکنش‌هایم را در دست دارم.",
+  "هر روز آگاه‌تر از دیروز می‌شوم.",
+  "من قدرت انتخاب دارم.",
+  "من می‌توانم نسخه بهتری از خودم بسازم."
 ];
 
+/*************************
+ * CONFIG
+ *************************/
+const QUESTIONS = [
+  { text: "معمولاً ذهنت آرام است؟", dimension: "mind" },
+  { text: "می‌توانی افکارت را مدیریت کنی؟", dimension: "mind" },
+  { text: "استرس را خوب کنترل می‌کنی؟", dimension: "mind" },
+  { text: "در لحظه حال حضور داری؟", dimension: "mind" },
+  { text: "با احساساتت آشتی هستی؟", dimension: "mind" },
+
+  { text: "هدفت در زندگی شفاف است؟", dimension: "goal" },
+  { text: "برای آینده برنامه داری؟", dimension: "goal" },
+  { text: "تصمیم‌هایت هدفمندند؟", dimension: "goal" },
+  { text: "می‌دانی چه می‌خواهی؟", dimension: "goal" },
+  { text: "پیشرفتت را می‌سنجی؟", dimension: "goal" },
+
+  { text: "عادت‌های مثبتی داری؟", dimension: "habit" },
+  { text: "پایبند به روتین هستی؟", dimension: "habit" },
+  { text: "کارها را عقب نمی‌اندازی؟", dimension: "habit" },
+  { text: "استمرار داری؟", dimension: "habit" },
+  { text: "خودکنترلی خوبی داری؟", dimension: "habit" },
+
+  { text: "خودت را خوب می‌شناسی؟", dimension: "self" },
+  { text: "نقاط قوتت را می‌دانی؟", dimension: "self" },
+  { text: "نقاط ضعفت را پذیرفته‌ای؟", dimension: "self" },
+  { text: "با خودت صادقی؟", dimension: "self" },
+  { text: "خودت را دوست داری؟", dimension: "self" }
+];
+
+const DIMENSIONS = {
+  mind:  { label: "ذهن", importance: 1.1 },
+  goal:  { label: "هدف", importance: 1.3 },
+  habit: { label: "عادت", importance: 1.4 },
+  self:  { label: "خودشناسی", importance: 1.5 }
+};
+
+/*************************
+ * STATE
+ *************************/
+let currentQuestion = 0;
+let answers = [];
+let gratitudeIndex = 0;
 let beliefIndex = 0;
 
-function startBeliefCorrection() {
-  beliefIndex = 0;
-  showBeliefCard();
+/*************************
+ * DOM
+ *************************/
+const cardArea = document.getElementById("card-area");
+const inputArea = document.getElementById("input-area");
+const input = document.getElementById("userInput");
+const sendBtn = document.getElementById("sendBtn");
+
+/*************************
+ * INIT
+ *************************/
+renderQuestion();
+
+/*************************
+ * EVENTS
+ *************************/
+sendBtn.addEventListener("click", submitAnswer);
+input.addEventListener("keydown", e => e.key === "Enter" && submitAnswer());
+
+/*************************
+ * QUESTION FLOW
+ *************************/
+function renderQuestion() {
+  const q = QUESTIONS[currentQuestion];
+  cardArea.innerHTML = `
+    <div class="question-card">
+      <div class="question-number">
+        سوال ${currentQuestion + 1} از ${QUESTIONS.length}
+      </div>
+      <div class="question-text">${q.text}</div>
+    </div>
+  `;
+  input.value = "";
+  input.focus();
 }
 
-function showBeliefCard() {
-  const card = `
+function submitAnswer() {
+  const value = Number(input.value);
+  if (value < 1 || value > 10) return;
+
+  answers.push({ dimension: QUESTIONS[currentQuestion].dimension, value });
+  currentQuestion++;
+
+  currentQuestion < QUESTIONS.length
+    ? renderQuestion()
+    : showResults(analyzeAssessment());
+}
+
+/*************************
+ * ANALYSIS
+ *************************/
+function analyzeAssessment() {
+  const data = {};
+  Object.keys(DIMENSIONS).forEach(k => {
+    data[k] = { sum: 0, count: 0, importance: DIMENSIONS[k].importance };
+  });
+
+  answers.forEach(a => {
+    data[a.dimension].sum += a.value;
+    data[a.dimension].count++;
+  });
+
+  let weightedSum = 0;
+  let importanceSum = 0;
+
+  Object.keys(DIMENSIONS).forEach(k => {
+    const avg = data[k].sum / data[k].count;
+    const score = Math.round(avg * 10);
+    data[k].score = score;
+    data[k].priority = Math.round(data[k].importance * (100 - score));
+    weightedSum += score * data[k].importance;
+    importanceSum += data[k].importance;
+  });
+
+  data.overallScore = Math.round(weightedSum / importanceSum);
+  return data;
+}
+
+/*************************
+ * COACH
+ *************************/
+function getCoachInsight(data) {
+  const self = data.self.score;
+  let message =
+    self < 70
+      ? "الان تمرکز اصلی روی آرامش و خودشناسیه."
+      : self < 85
+      ? "پایه خوبی داری. رشد تدریجی بهترین انتخابه."
+      : "آماده اجرای رشد هدفمند هستی.";
+
+  return { message };
+}
+
+/*************************
+ * RESULTS
+ *************************/
+function showResults(data) {
+  const coach = getCoachInsight(data);
+
+  let html = `<div class="question-card">`;
+  Object.keys(DIMENSIONS).forEach(k => {
+    html += `<div class="result-row">${DIMENSIONS[k].label}: ${data[k].score}%</div>`;
+  });
+
+  html += `
+    <hr>
+    <strong>🎯 امتیاز کل: ${data.overallScore}%</strong>
+    <hr>
+    <div>👤 Coach:<br>${coach.message}</div>
+    <button onclick="startProgram()" style="${mainBtnStyle()}">
+      🚀 ورود به برنامه رشد
+    </button>
+  </div>`;
+
+  cardArea.innerHTML = html;
+  inputArea.style.display = "none";
+}
+
+/*************************
+ * PROGRAM
+ *************************/
+function startProgram() {
+  cardArea.innerHTML = `
+    <div class="question-card">
+      <div class="question-text">📅 برنامه رشد شخصی</div>
+      ${programCard("🔥","عادت‌ساز","openHabit","#ff7a18,#ffb347")}
+      ${programCard("⚡","ایجاد انگیزه","openMotivation","#f953c6,#b91d73")}
+      ${programCard("🌿","ایجاد آرامش","openCalm","#43cea2,#185a9d")}
+      ${programCard("🎯","کشف هدف","openGoal","#f7971e,#ffd200")}
+      ${programCard("💪","تقویت اراده","openWill","#11998e,#38ef7d")}
+      ${programCard("🙏","شکرگزاری","openGratitude","#56ab2f,#a8e063")}
+      ${programCard("🧠","اصلاح باورها","openBelief","#8360c3,#2ebf91")}
+    </div>
+  `;
+}
+
+function programCard(icon,title,fn,gradient) {
+  return `
+    <div onclick="${fn}()" style="
+      margin-top:14px;
+      padding:16px;
+      border-radius:18px;
+      cursor:pointer;
+      color:white;
+      font-weight:bold;
+      background:linear-gradient(135deg,${gradient});
+      display:flex;
+      align-items:center;
+      gap:12px;
+    ">
+      <div style="font-size:26px">${icon}</div>
+      <div>${title}</div>
+    </div>
+  `;
+}
+
+/*************************
+ * SECTIONS
+ *************************/
+function showSection(title,text) {
+  cardArea.innerHTML = `
+    <div class="question-card">
+      <div class="question-text">${title}</div>
+      <p style="margin-top:10px">${text}</p>
+      <button onclick="startProgram()" style="${backBtnStyle()}">
+        ⬅ بازگشت
+      </button>
+    </div>
+  `;
+}
+
+const openHabit      = () => showSection("🔥 عادت‌ساز","ساخت عادت‌های کوچک روزانه.");
+const openMotivation = () => showSection("⚡ ایجاد انگیزه","اتصال به معنا و انرژی درونی.");
+const openCalm       = () => showSection("🌿 ایجاد آرامش","تنظیم ذهن و سیستم عصبی.");
+const openGoal       = () => showSection("🎯 کشف هدف","شفاف‌سازی مسیر زندگی.");
+const openWill       = () => showSection("💪 تقویت اراده","تمرین تعهد و استمرار.");
+
+/*************************
+ * ✅ BELIEF (CARD‑BASED)
+ *************************/
+function openBelief() {
+  beliefIndex = 0;
+  renderBeliefCard();
+}
+
+function renderBeliefCard() {
+  cardArea.innerHTML = `
     <div class="question-card">
       <div class="question-number">
         اصلاح باور ${beliefIndex + 1} از ${BELIEF_LIST.length}
       </div>
-      <div class="question-text">
+
+      <div class="question-text" style="margin-top:14px">
         ${BELIEF_LIST[beliefIndex]}
       </div>
+
+      <button onclick="nextBelief()" style="${mainBtnStyle()}">
+        💪 من می‌تونم
+      </button>
+
+      <button onclick="prevBelief()" style="${backBtnStyle()}">
+        ⬅ قبلی
+      </button>
+
+      <button onclick="startProgram()" style="${backBtnStyle()}">
+        🏠 منوی اصلی
+      </button>
     </div>
-  `;
-
-  document.getElementById("card-area").innerHTML = card;
-
-  document.getElementById("input-area").innerHTML = `
-    <button onclick="prevBelief()">⬅ قبلی</button>
-    <button onclick="nextBelief()">من می‌تونم 💪</button>
-    <button onclick="showMainMenu()">🏠 منوی اصلی</button>
   `;
 }
 
 function nextBelief() {
   if (beliefIndex < BELIEF_LIST.length - 1) {
     beliefIndex++;
-    showBeliefCard();
+    renderBeliefCard();
   }
 }
 
 function prevBelief() {
   if (beliefIndex > 0) {
     beliefIndex--;
-    showBeliefCard();
+    renderBeliefCard();
   }
 }
 
-/***********************
- * INIT
- ***********************/
-showMainMenu();
+/*************************
+ * ✅ GRATITUDE (CARD‑BASED)
+ *************************/
+const openGratitude = () => {
+  cardArea.innerHTML = `
+    <div class="question-card">
+      <div class="question-text">🙏 شکرگزاری</div>
+
+      ${programSubBtn("📖 چرا شکرگزاری؟", "openWhyGratitude", "#8360c3,#2ebf91")}
+      ${programSubBtn("🤍 با هم شکرگزاری کنیم", "startGratitudeCards", "#56ab2f,#a8e063")}
+
+      <button onclick="startProgram()" style="${backBtnStyle()}">
+        ⬅ بازگشت
+      </button>
+    </div>
+  `;
+};
+
+function programSubBtn(title, fn, gradient) {
+  return `
+    <div onclick="${fn}()" style="
+      margin-top:14px;
+      padding:14px;
+      border-radius:16px;
+      cursor:pointer;
+      color:white;
+      font-weight:bold;
+      background:linear-gradient(135deg,${gradient});
+      text-align:center;
+    ">
+      ${title}
+    </div>
+  `;
+}
+
+function openWhyGratitude() {
+  cardArea.innerHTML = `
+    <div class="question-card">
+      <div class="question-text">📖 چرا شکرگزاری؟</div>
+      <p style="margin-top:12px; line-height:1.9">
+        شکرگزاری تمرینی قدرتمند برای افزایش آرامش،
+        رضایت درونی و حضور در لحظه حال است.
+      </p>
+      <button onclick="openGratitude()" style="${backBtnStyle()}">
+        ⬅ بازگشت
+      </button>
+    </div>
+  `;
+}
+
+function startGratitudeCards() {
+  gratitudeIndex = 0;
+  renderGratitudeCard();
+}
+
+function renderGratitudeCard() {
+  cardArea.innerHTML = `
+    <div class="question-card">
+      <div class="question-number">
+        شکرگزاری ${gratitudeIndex + 1} از ${GRATITUDE_LIST.length}
+      </div>
+
+      <div class="question-text" style="margin-top:14px">
+        ${GRATITUDE_LIST[gratitudeIndex]}
+      </div>
+
+      <button onclick="nextGratitude()" style="${mainBtnStyle()}">
+        🤍 خدایا شکرت
+      </button>
+
+      <button onclick="prevGratitude()" style="${backBtnStyle()}">
+        ⬅ قبلی
+      </button>
+
+      <button onclick="startProgram()" style="${backBtnStyle()}">
+        🏠 منوی اصلی
+      </button>
+    </div>
+  `;
+}
+
+function nextGratitude() {
+  if (gratitudeIndex < GRATITUDE_LIST.length - 1) {
+    gratitudeIndex++;
+    renderGratitudeCard();
+  }
+}
+
+function prevGratitude() {
+  if (gratitudeIndex > 0) {
+    gratitudeIndex--;
+    renderGratitudeCard();
+  }
+}
+
+/*************************
+ * STYLES
+ *************************/
+function mainBtnStyle() {
+  return `
+    margin-top:20px;
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:16px;
+    font-weight:bold;
+    cursor:pointer;
+    color:white;
+    background:linear-gradient(135deg,#ff8c1a,#ffb703);
+  `;
+}
+
+function backBtnStyle() {
+  return `
+    margin-top:20px;
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:16px;
+    font-weight:bold;
+    cursor:pointer;
+    background:#eee;
+  `;
+}
