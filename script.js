@@ -913,3 +913,65 @@ button {
     alert("🗓 ۲۱ روز = هویت جدید");
   };
 })();
+/*******************************************************
+ ✅ ULTIMATE FAILSAFE HABIT PATCH
+  Renders directly into document.body
+*******************************************************/
+(() => {
+  console.log("🔥 ULTIMATE Habit patch loaded");
+
+  function removeHabit() {
+    const old = document.getElementById("habit-overlay");
+    if (old) old.remove();
+  }
+
+  window.openHabit = function () {
+    console.log("🔥 openHabit ULTIMATE executed");
+
+    removeHabit();
+
+    const overlay = document.createElement("div");
+    overlay.id = "habit-overlay";
+    overlay.style.cssText = `
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      direction: rtl;
+      font-family: sans-serif;
+    `;
+
+    const box = document.createElement("div");
+    box.style.cssText = `
+      background: #f1fff4;
+      padding: 25px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 420px;
+      text-align: center;
+      border: 4px solid #4caf50;
+      animation: pop .25s ease;
+    `;
+
+    box.innerHTML = `
+      <h2>🌱 عادت‌ساز</h2>
+      <p style="margin:10px 0">
+        ✅ اگر این باکس را می‌بینی، یعنی کد **قطعاً اجرا شده**
+      </p>
+
+      <button onclick="alert('نقش عادت‌ها')">📖 نقش عادت‌ها</button><br><br>
+      <button onclick="alert('عادت ساز')">💪 عادت‌ساز</button><br><br>
+      <button onclick="alert('چالش ۲۱ روزه')">🗓 چالش ۲۱ روزه</button><br><br>
+
+      <button onclick="document.getElementById('habit-overlay').remove()">
+        ❌ بستن
+      </button>
+    `;
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+  };
+})();
