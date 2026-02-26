@@ -307,7 +307,7 @@ function renderBeliefCard() {
         ${BELIEF_LIST[beliefIndex]}
       </div>
 
-      <button onclick="pulse(this); nextBelief()" style="${mainBtnStyle()}">
+      <button onclick="nextBelief()" style="${mainBtnStyle()}">
         💪 من می‌تونم
       </button>
 
@@ -432,7 +432,7 @@ function renderGratitudeCard() {
         ${GRATITUDE_LIST[gratitudeIndex]}
       </div>
 
-      <button onclick="pulse(this); nextGratitude()" style="${mainBtnStyle()}">
+      <button onclick="nextGratitude()" style="${mainBtnStyle()}">
         🤍 خدایا شکرت
       </button>
 
@@ -460,26 +460,47 @@ function prevGratitude() {
     renderGratitudeCard();
   }
 }
-function startBeliefCards() {
-  const saved = JSON.parse(localStorage.getItem("beliefProgress") || "{}");
-  beliefIndex = saved.index || 0;
-  renderBeliefCard();
-}
+/*************************
+ * 🔒 BELIEF PROGRESS PERSISTENCE (PATCH)
+ *************************/
+(function () {
+  const _startBeliefCards = startBeliefCards;
+  const _nextBelief = nextBelief;
 
-function nextBelief() {
-  if (beliefIndex < BELIEF_LIST.length - 1) {
-    beliefIndex++;
+  startBeliefCards = function () {
+    const saved = JSON.parse(localStorage.getItem("beliefProgress") || "{}");
+    beliefIndex = typeof saved.index === "number" ? saved.index : 0;
+    _startBeliefCards();
+  };
+
+  nextBelief = function () {
+    _nextBelief();
     localStorage.setItem(
       "beliefProgress",
       JSON.stringify({ index: beliefIndex })
     );
-    renderBeliefCard();
-  }
-}
-function pulse(el) {
-  el.classList.add("pulse-glow");
-  setTimeout(() => el.classList.remove("pulse-glow"), 600);
-}
+  };
+})();
+/*************************
+ * ✨ BUTTON PULSE EFFECT (PATCH)
+ *************************/
+(function () {
+  document.addEventListener("click", e => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+
+    if (
+      btn.textContent.includes("من می‌تونم") ||
+      btn.textContent.includes("خدایا شکرت")
+    ) {
+      btn.classList.add("pulse-glow");
+      setTimeout(() => btn.classList.remove("pulse-glow"), 650);
+    }
+  });
+})();
+/*************************
+ * 🎨 FONT + ANIMATION STYLE (PATCH)
+ *************************/
 (() => {
   const style = document.createElement("style");
   style.textContent = `
@@ -487,16 +508,26 @@ function pulse(el) {
 
 .question-card {
   font-family: 'Vazirmatn', sans-serif;
+  letter-spacing: 0.2px;
 }
 
 .pulse-glow {
-  animation: pulseGlow .6s ease;
+  animation: pulseGlow .65s ease;
 }
 
 @keyframes pulseGlow {
-  0% { transform: scale(1); box-shadow: 0 0 0 rgba(255,200,0,0); }
-  50% { transform: scale(1.1); box-shadow: 0 0 14px rgba(255,200,0,.8); }
-  100% { transform: scale(1); box-shadow: 0 0 0 rgba(255,200,0,0); }
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(255,180,0,0);
+  }
+  50% {
+    transform: scale(1.12);
+    box-shadow: 0 0 18px rgba(255,180,0,.85);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(255,180,0,0);
+  }
 }
 `;
   document.head.appendChild(style);
