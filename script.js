@@ -843,3 +843,73 @@ button {
     `;
   };
 })();
+/*******************************************************
+ ✅ FINAL GUARANTEED Habit Patch
+  Safe render via appendChild (non-destructible)
+*******************************************************/
+(() => {
+  console.log("✅ Habit FINAL patch loaded");
+
+  function getCardArea() {
+    return document.getElementById("card-area");
+  }
+
+  function clearHabitContainer() {
+    const old = document.getElementById("habit-root");
+    if (old) old.remove();
+  }
+
+  window.openHabit = function () {
+    console.log("✅ openHabit FINAL EXECUTED");
+
+    const cardArea = getCardArea();
+    if (!cardArea) {
+      console.error("❌ card-area not found");
+      return;
+    }
+
+    clearHabitContainer();
+
+    const wrapper = document.createElement("div");
+    wrapper.id = "habit-root";
+    wrapper.style.cssText = `
+      direction: rtl;
+      padding: 20px;
+      margin: 20px auto;
+      border: 3px solid #4caf50;
+      border-radius: 12px;
+      background: #f1fff4;
+      max-width: 500px;
+      text-align: center;
+      font-size: 16px;
+    `;
+
+    wrapper.innerHTML = `
+      <h2>🌱 بخش عادت‌ساز</h2>
+      <p>اگر این متن را می‌بینی، یعنی Patch 100٪ موفق بوده ✅</p>
+
+      <button onclick="habitRole()">📖 نقش عادت‌ها</button><br><br>
+      <button onclick="habitBuilder()">💪 عادت‌ساز</button><br><br>
+      <button onclick="habitChallenge()">🗓 چالش ۲۱ روزه</button><br><br>
+
+      <button onclick="this.parentNode.remove()">❌ بستن</button>
+    `;
+
+    cardArea.appendChild(wrapper);
+
+    // اسکرول خودکار (خیلی مهم)
+    wrapper.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
+  window.habitRole = function () {
+    alert("📖 عادت‌ها آینده‌ی نامرئی ما را می‌سازند.");
+  };
+
+  window.habitBuilder = function () {
+    alert("💪 هر روز یک قدم کوچک.");
+  };
+
+  window.habitChallenge = function () {
+    alert("🗓 ۲۱ روز = هویت جدید");
+  };
+})();
