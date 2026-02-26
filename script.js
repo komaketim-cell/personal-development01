@@ -398,3 +398,65 @@ function backBtnStyle() {
     background:#eee;
   `;
 }
+/*************************
+ * ✅ GRATITUDE (FIXED)
+ *************************/
+function openWhyGratitude() {
+  cardArea.innerHTML = `
+    <div class="question-card">
+      <div class="question-text">📖 چرا شکرگزاری؟</div>
+      <p style="margin-top:12px; line-height:1.9">
+        شکرگزاری تمرینی قدرتمند برای افزایش آرامش،
+        رضایت درونی و حضور در لحظه حال است.
+      </p>
+      <button onclick="openGratitude()" style="${backBtnStyle()}">
+        ⬅ بازگشت
+      </button>
+    </div>
+  `;
+}
+
+function startGratitudeCards() {
+  gratitudeIndex = 0;
+  renderGratitudeCard();
+}
+
+function renderGratitudeCard() {
+  cardArea.innerHTML = `
+    <div class="question-card">
+      <div class="question-number">
+        شکرگزاری ${gratitudeIndex + 1} از ${GRATITUDE_LIST.length}
+      </div>
+
+      <div class="question-text" style="margin-top:14px">
+        ${GRATITUDE_LIST[gratitudeIndex]}
+      </div>
+
+      <button onclick="nextGratitude()" style="${mainBtnStyle()}">
+        🤍 خدایا شکرت
+      </button>
+
+      <button onclick="prevGratitude()" style="${backBtnStyle()}">
+        ⬅ قبلی
+      </button>
+
+      <button onclick="startProgram()" style="${backBtnStyle()}">
+        🏠 منوی اصلی
+      </button>
+    </div>
+  `;
+}
+
+function nextGratitude() {
+  if (gratitudeIndex < GRATITUDE_LIST.length - 1) {
+    gratitudeIndex++;
+    renderGratitudeCard();
+  }
+}
+
+function prevGratitude() {
+  if (gratitudeIndex > 0) {
+    gratitudeIndex--;
+    renderGratitudeCard();
+  }
+}
