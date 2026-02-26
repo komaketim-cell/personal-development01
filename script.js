@@ -532,3 +532,5 @@ function prevGratitude() {
 `;
   document.head.appendChild(style);
 })();
+console.log("✅ PATCH LOADED");
+alert("PATCH LOADED");
