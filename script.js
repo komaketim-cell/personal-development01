@@ -777,3 +777,69 @@ button {
   `;
   document.head.appendChild(style);
 })();
+/*******************************************************
+ ✅ FIX PATCH: Habit Builder Render Target
+  اصلاح مقصد رندر از #app به #card-area
+*******************************************************/
+(() => {
+  console.log("🧩 Habit Patch FIX loaded");
+
+  const getRoot = () => {
+    return (
+      document.getElementById("card-area") ||
+      document.querySelector("#card-area")
+    );
+  };
+
+  // Override نهایی
+  window.openHabit = function () {
+    console.log("✅ openHabit FINAL override active");
+
+    const root = getRoot();
+    if (!root) {
+      console.error("❌ card-area not found. Habit cannot render.");
+      return;
+    }
+
+    root.innerHTML = `
+      <div class="habit-menu" style="direction:rtl;text-align:center;padding:20px">
+        <h2>🌱 بخش عادت‌ساز</h2>
+
+        <button onclick="habitRole()" class="habit-btn">📖 نقش عادت‌ها در زندگی</button>
+        <button onclick="habitBuilder()" class="habit-btn">💪 عادت‌ساز</button>
+        <button onclick="habitChallenge()" class="habit-btn">🗓 چالش ۲۱ روزه</button>
+
+        <br><br>
+        <button onclick="showMainMenu()" class="back-btn">بازگشت به منوی اصلی</button>
+      </div>
+    `;
+  };
+
+  // ---------- بخش‌ها ----------
+  window.habitRole = function () {
+    const root = getRoot();
+    root.innerHTML = `
+      <h3>📖 نقش عادت‌ها در زندگی</h3>
+      <p>عادت‌ها معماری نامرئی زندگی ما هستند. رفتارهای کوچک امروز، آینده ما را می‌سازند.</p>
+      <button onclick="openHabit()">بازگشت</button>
+    `;
+  };
+
+  window.habitBuilder = function () {
+    const root = getRoot();
+    root.innerHTML = `
+      <h3>💪 عادت‌ساز</h3>
+      <p>هر روز فقط یک قدم کوچک اما مداوم.</p>
+      <button onclick="openHabit()">بازگشت</button>
+    `;
+  };
+
+  window.habitChallenge = function () {
+    const root = getRoot();
+    root.innerHTML = `
+      <h3>🗓 چالش ۲۱ روزه</h3>
+      <p>۳ هفته، ۳ مرحله: شروع، تثبیت، هویت‌سازی</p>
+      <button onclick="openHabit()">بازگشت</button>
+    `;
+  };
+})();
