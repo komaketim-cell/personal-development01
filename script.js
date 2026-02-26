@@ -542,3 +542,207 @@ button {
 `;
   document.head.appendChild(style);
 })();
+/***************************************************
+ * 🔥 HABIT BUILDER SECTION (PATCH)
+ ***************************************************/
+(() => {
+  const HABIT_LIST = [
+    "من هر روز حتی با قدم‌های کوچک به سمت بهتر شدن حرکت می‌کنم.",
+    "من شروع کردن را به کامل بودن ترجیح می‌دهم.",
+    "من به جای انتظار برای انگیزه، با عمل کردن انگیزه می‌سازم.",
+    "من برای زمانم ارزش قائلم و آن را آگاهانه خرج می‌کنم.",
+    "من عادت‌های کوچکی می‌سازم که آینده بزرگی برایم می‌آفرینند.",
+    "من مراقبت از جسم و ذهنم را جزو اولویت‌های زندگی‌ام می‌دانم.",
+    "من هر روز چیزی جدید یاد می‌گیرم، حتی اگر بسیار کوچک باشد.",
+    "من کارهای مهمم را قبل از کارهای آسان انجام می‌دهم.",
+    "من با تکرار روزانه، مهارت‌هایم را عمیق‌تر می‌کنم.",
+    "من افکارم را می‌نویسم تا ذهنم شفاف‌تر شود.",
+    "من برای داشته‌هایم قدردانم و این حس را هر روز تمرین می‌کنم.",
+    "من بدنم را هر روز به حرکت وادار می‌کنم تا انرژی داشته باشم.",
+    "من محیط اطرافم را مرتب نگه می‌دارم تا ذهنم آرام بماند.",
+    "من شب‌ها برای فردایم برنامه ساده و واضح می‌نویسم.",
+    "من به جای مقایسه خودم با دیگران، پیشرفت خودم را می‌سنجم.",
+    "من روی کارهایی تمرکز می‌کنم که واقعاً در زندگی‌ام اثر دارند.",
+    "من استراحت کافی را بخشی از موفقیتم می‌دانم.",
+    "من با انجام کارهای کوچک اما مداوم، اعتمادبه‌نفسم را می‌سازم.",
+    "من به خودم فرصت اشتباه و یادگیری می‌دهم.",
+    "من هر روز نسخه آگاهانه‌تر و قوی‌تری از خودم می‌شوم."
+  ];
+
+  const WEEK_DATA = {
+    1: {
+      title: "هفته اول — شروع و فعال‌سازی (روزهای ۱ تا ۷)",
+      goal: "🎯 هدف هفته اول: فقط «شروع کردن و انجام دادن» بدون وسواس.",
+      days: [
+        "روز ۱: امروز فقط یک عادت کوچک انتخاب می‌کنم و متعهد می‌شوم ۲۱ روز ادامه‌اش بدهم.",
+        "روز ۲: امروز کار مهمم را قبل از چک کردن گوشی انجام می‌دهم.",
+        "روز ۳: امروز ۱۰ دقیقه مطالعه یا یادگیری انجام می‌دهم.",
+        "روز ۴: امروز ۵ دقیقه افکارم را می‌نویسم.",
+        "روز ۵: امروز حداقل ۱۰ دقیقه بدنم را حرکت می‌دهم.",
+        "روز ۶: امروز یک کار نیمه‌تمام کوچک را کامل می‌کنم.",
+        "روز ۷: امروز ۳ مورد از چیزهایی که بابتشان شکرگزارم را می‌نویسم."
+      ]
+    },
+    2: {
+      title: "هفته دوم — تثبیت و آگاهی (روزهای ۸ تا ۱۴)",
+      goal: "🎯 هدف هفته دوم: «پایداری و خودآگاهی».",
+      days: [
+        "روز ۸: امروز محیط اطرافم را ۱۰ دقیقه مرتب می‌کنم.",
+        "روز ۹: امروز آگاهانه‌تر غذا می‌خورم و عجله نمی‌کنم.",
+        "روز ۱۰: امروز یک حواس‌پرتی رایج را کمتر می‌کنم.",
+        "روز ۱۱: امروز یک مهارت کوچک مرتبط با هدفم تمرین می‌کنم.",
+        "روز ۱۲: امروز قبل از خواب، فردایم را در ۳ خط برنامه‌ریزی می‌کنم.",
+        "روز ۱۳: امروز به جای کمال‌گرایی، نسخه ساده کار را انجام می‌دهم.",
+        "روز ۱۴: امروز پیشرفت دو هفته اخیرم را مرور و ثبت می‌کنم."
+      ]
+    },
+    3: {
+      title: "هفته سوم — هویت‌سازی (روزهای ۱۵ تا ۲۱)",
+      goal: "🎯 هدف هفته سوم: «تبدیل رفتار به هویت».",
+      days: [
+        "روز ۱۵: امروز خودم را فردی می‌بینم که این عادت را دارد و مطابق آن رفتار می‌کنم.",
+        "روز ۱۶: امروز یک کار دشوار اما مهم را شروع می‌کنم.",
+        "روز １７: امروز ۱۵ دقیقه تمرکز عمیق روی یک کار انجام می‌دهم.",
+        "روز ۱۸: امروز به خودم بابت ادامه مسیر پاداش کوچک می‌دهم.",
+        "روز ۱۹: امروز یک باور محدودکننده را شناسایی و بازنویسی می‌کنم.",
+        "روز ۲۰: امروز تصور می‌کنم اگر این عادت را یک سال ادامه دهم، زندگی‌ام چگونه می‌شود.",
+        "روز ۲۱: امروز کل مسیر را مرور می‌کنم و تصمیم می‌گیرم این عادت را به سبک زندگی تبدیل کنم."
+      ]
+    }
+  };
+
+  let habitIndex = 0;
+  let currentWeek = 1;
+  let currentDay = 0;
+
+  /***********************
+   * 🧩 MAIN HABIT MENU
+   ***********************/
+  const openHabit = () => {
+    cardArea.innerHTML = `
+      <div class="question-card">
+        <div class="question-text">🔥 بخش عادت‌ساز</div>
+        ${programSubBtn("📘 نقش عادت‌ها در زندگی", "openHabitIntro", "#ff7a18,#ffb347")}
+        ${programSubBtn("💪 عادت‌ساز", "startHabitCards", "#56ab2f,#a8e063")}
+        ${programSubBtn("🗓 چالش ۲۱ روزه ایجاد عادت", "openHabitChallenge", "#8360c3,#2ebf91")}
+        <button onclick="startProgram()" style="${backBtnStyle()}">🏠 منوی اصلی</button>
+      </div>
+    `;
+  };
+
+  /***********************
+   * 💡 HABIT INTRO
+   ***********************/
+  window.openHabitIntro = () => {
+    cardArea.innerHTML = `
+      <div class="question-card">
+        <div class="question-text">📘 نقش عادت‌ها در زندگی</div>
+        <p style="margin-top:12px; line-height:1.9">
+          عادت‌ها پایه و موتور تغییرات پایدار در زندگی هستند. هر رفتار کوچک روزانه،
+          در بلندمدت هویت ما را شکل می‌دهد.
+        </p>
+        <button onclick="openHabit()" style="${backBtnStyle()}">⬅ بازگشت</button>
+      </div>
+    `;
+  };
+
+  /***********************
+   * 💪 HABIT CARDS
+   ***********************/
+  window.startHabitCards = () => {
+    habitIndex = 0;
+    renderHabitCard();
+  };
+
+  window.renderHabitCard = () => {
+    cardArea.innerHTML = `
+      <div class="question-card">
+        <div class="question-number">عادت ${habitIndex + 1} از ${HABIT_LIST.length}</div>
+        <div class="question-text" style="margin-top:14px">${HABIT_LIST[habitIndex]}</div>
+        <button onclick="nextHabitCard()" style="${mainBtnStyle()}">💪 من می‌تونم</button>
+        <button onclick="prevHabitCard()" style="${backBtnStyle()}">⬅ قبلی</button>
+        <button onclick="openHabit()" style="${backBtnStyle()}">🏠 منوی اصلی</button>
+      </div>
+    `;
+  };
+
+  window.nextHabitCard = () => {
+    if (habitIndex < HABIT_LIST.length - 1) {
+      habitIndex++;
+      renderHabitCard();
+    }
+  };
+
+  window.prevHabitCard = () => {
+    if (habitIndex > 0) {
+      habitIndex--;
+      renderHabitCard();
+    }
+  };
+
+  /***********************
+   * 🗓 CHALLENGE MENU
+   ***********************/
+  window.openHabitChallenge = () => {
+    cardArea.innerHTML = `
+      <div class="question-card">
+        <div class="question-text">🗓 چالش ۲۱ روزه ایجاد عادت</div>
+        ${programSubBtn("هفته اول — شروع و فعال‌سازی", "openWeek(1)", "#ff7a18,#ffb347")}
+        ${programSubBtn("هفته دوم — تثبیت و آگاهی", "openWeek(2)", "#f7971e,#ffd200")}
+        ${programSubBtn("هفته سوم — هویت‌سازی", "openWeek(3)", "#8360c3,#2ebf91")}
+        <button onclick="openHabit()" style="${backBtnStyle()}">⬅ بازگشت</button>
+      </div>
+    `;
+  };
+
+  /***********************
+   * 📆 WEEK VIEW
+   ***********************/
+  window.openWeek = (w) => {
+    currentWeek = w;
+    const week = WEEK_DATA[w];
+    cardArea.innerHTML = `
+      <div class="question-card">
+        <div class="question-text">${week.title}</div>
+        <div style="margin-top:10px; font-weight:bold; color:#ff7a18; animation: blinkGoal 1s infinite alternate;">
+          ${week.goal}
+        </div>
+        ${week.days
+          .map((d, i) => `<div onclick="openDay(${i})" style="margin-top:10px; padding:10px; border-radius:12px; background:#eee; cursor:pointer;">${d.split(":")[0]}</div>`)
+          .join("")}
+        <button onclick="openHabitChallenge()" style="${backBtnStyle()}">⬅ بازگشت به منوی چالش</button>
+        <button onclick="openHabit()" style="${backBtnStyle()}">🏠 منوی اصلی</button>
+      </div>
+    `;
+  };
+
+  /***********************
+   * 📅 DAY VIEW
+   ***********************/
+  window.openDay = (i) => {
+    currentDay = i;
+    const week = WEEK_DATA[currentWeek];
+    const text = week.days[i];
+    cardArea.innerHTML = `
+      <div class="question-card">
+        <div class="question-number">${week.title}</div>
+        <div class="question-text" style="margin-top:14px">${text}</div>
+        <button onclick="openWeek(${currentWeek})" style="${backBtnStyle()}">⬅ بازگشت به هفته</button>
+        <button onclick="openHabitChallenge()" style="${backBtnStyle()}">⬅ بازگشت به چالش</button>
+        <button onclick="openHabit()" style="${backBtnStyle()}">🏠 منوی اصلی</button>
+      </div>
+    `;
+  };
+
+  /***********************
+   * ✨ CSS EFFECT
+   ***********************/
+  const style = document.createElement("style");
+  style.textContent = `
+  @keyframes blinkGoal {
+    0% { opacity: 1; }
+    100% { opacity: 0.4; }
+  }
+  `;
+  document.head.appendChild(style);
+})();
