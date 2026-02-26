@@ -246,7 +246,24 @@ function programCard(icon,title,fn,gradient) {
 /*************************
  * SECTIONS (unchanged)
  *************************/
-const openHabit      = () => showSection("🔥 عادت‌ساز","ساخت عادت‌های کوچک روزانه.");
+/*************************
+ * 🔥 HABIT BUILDER MAIN
+ *************************/
+const openHabit = () => {
+  cardArea.innerHTML = `
+    <div class="question-card">
+      <div class="question-text">🔥 عادت‌ساز</div>
+
+      ${programSubBtn("📖 نقش عادت‌ها در زندگی","openHabitRole","#ff7a18,#ffb347")}
+      ${programSubBtn("💪 عادت‌ساز","startHabitBuilder","#ff512f,#dd2476")}
+      ${programSubBtn("🏆 چالش ۲۱ روزه ایجاد عادت","open21Challenge","#11998e,#38ef7d")}
+
+      <button onclick="startProgram()" style="${backBtnStyle()}">
+        ⬅ بازگشت به منوی اصلی
+      </button>
+    </div>
+  `;
+};
 const openMotivation = () => showSection("⚡ ایجاد انگیزه","اتصال به معنا و انرژی درونی.");
 const openCalm       = () => showSection("🌿 ایجاد آرامش","تنظیم ذهن و سیستم عصبی.");
 const openGoal       = () => showSection("🎯 کشف هدف","شفاف‌سازی مسیر زندگی.");
@@ -541,64 +558,175 @@ button {
 }
 `;
   document.head.appendChild(style);
-})();
-/*******************************************************
- 🔒 LOCKED Habit Patch (Override-proof)
-*******************************************************/
-(() => {
-  console.log("🔒 LOCKED Habit patch loaded");
+}
+.blink-goal{
+  animation: blinkGoal 1s infinite;
+  font-weight:bold;
+  margin-bottom:10px;
+}
 
-  function renderHabitOverlay() {
-    const old = document.getElementById("habit-overlay");
-    if (old) old.remove();
+@keyframes blinkGoal{
+  0%{opacity:1;}
+  50%{opacity:.3;}
+  100%{opacity:1;}
+}
+function openHabitRole(){
+  cardArea.innerHTML = `
+    <div class="question-card">
+      <div class="question-text">📖 نقش عادت‌ها در زندگی</div>
+      <p style="margin-top:12px; line-height:1.9">
+        عادت‌ها مسیر آینده ما را می‌سازند.
+        آنچه هر روز تکرار می‌کنیم، شخصیت فردای ما را شکل می‌دهد.
+        موفقیت نتیجه کارهای کوچک اما مداوم است.
+      </p>
 
-    const overlay = document.createElement("div");
-    overlay.id = "habit-overlay";
-    overlay.style.cssText = `
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.65);
-      z-index: 999999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      direction: rtl;
-      font-family: sans-serif;
-    `;
-
-    const box = document.createElement("div");
-    box.style.cssText = `
-      background: #f1fff4;
-      padding: 25px;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 420px;
-      text-align: center;
-      border: 4px solid #4caf50;
-    `;
-
-    box.innerHTML = `
-      <h2>🌱 عادت‌ساز</h2>
-      <p>✅ اگر این را می‌بینی، override قفل شده است</p>
-
-      <button onclick="alert('نقش عادت‌ها')">📖 نقش عادت‌ها</button><br><br>
-      <button onclick="alert('عادت ساز')">💪 عادت‌ساز</button><br><br>
-      <button onclick="alert('چالش ۲۱ روزه')">🗓 چالش ۲۱ روزه</button><br><br>
-
-      <button onclick="document.getElementById('habit-overlay').remove()">
-        ❌ بستن
+      <button onclick="openHabit()" style="${backBtnStyle()}">
+        ⬅ بازگشت
       </button>
-    `;
 
-    overlay.appendChild(box);
-    document.body.appendChild(overlay);
+      <button onclick="startProgram()" style="${backBtnStyle()}">
+        🏠 منوی اصلی
+      </button>
+    </div>
+  `;
+}
+const HABIT_BUILDER_LIST = [
+"من هر روز حتی با قدم‌های کوچک به سمت بهتر شدن حرکت می‌کنم.",
+"من شروع کردن را به کامل بودن ترجیح می‌دهم.",
+"من به جای انتظار برای انگیزه، با عمل کردن انگیزه می‌سازم.",
+"من برای زمانم ارزش قائلم و آن را آگاهانه خرج می‌کنم.",
+"من عادت‌های کوچکی می‌سازم که آینده بزرگی برایم می‌آفرینند.",
+"من مراقبت از جسم و ذهنم را جزو اولویت‌های زندگی‌ام می‌دانم.",
+"من هر روز چیزی جدید یاد می‌گیرم، حتی اگر بسیار کوچک باشد.",
+"من کارهای مهمم را قبل از کارهای آسان انجام می‌دهم.",
+"من با تکرار روزانه، مهارت‌هایم را عمیق‌تر می‌کنم.",
+"من افکارم را می‌نویسم تا ذهنم شفاف‌تر شود.",
+"من برای داشته‌هایم قدردانم و این حس را هر روز تمرین می‌کنم.",
+"من بدنم را هر روز به حرکت وادار می‌کنم تا انرژی داشته باشم.",
+"من محیط اطرافم را مرتب نگه می‌دارم تا ذهنم آرام بماند.",
+"من شب‌ها برای فردایم برنامه ساده و واضح می‌نویسم.",
+"من به جای مقایسه خودم با دیگران، پیشرفت خودم را می‌سنجم.",
+"من روی کارهایی تمرکز می‌کنم که واقعاً در زندگی‌ام اثر دارند.",
+"من استراحت کافی را بخشی از موفقیتم می‌دانم.",
+"من با انجام کارهای کوچک اما مداوم، اعتماد به نفسم را می‌سازم.",
+"من به خودم فرصت اشتباه و یادگیری می‌دهم.",
+"من هر روز نسخه آگاهانه‌تر و قوی‌تری از خودم می‌شوم."
+];
+
+let habitIndex = 0;
+function startHabitBuilder(){
+  habitIndex = 0;
+  renderHabitCard();
+}
+
+function renderHabitCard(){
+  cardArea.innerHTML = `
+    <div class="question-card">
+      <div class="question-number">
+        عادت ${habitIndex+1} از ${HABIT_BUILDER_LIST.length}
+      </div>
+
+      <div class="question-text" style="margin-top:14px">
+        ${HABIT_BUILDER_LIST[habitIndex]}
+      </div>
+
+      <button onclick="nextHabit()" style="${mainBtnStyle()}">
+        💪 من می‌تونم
+      </button>
+
+      <button onclick="prevHabit()" style="${backBtnStyle()}">
+        ⬅ قبلی
+      </button>
+
+      <button onclick="startProgram()" style="${backBtnStyle()}">
+        🏠 منوی اصلی
+      </button>
+    </div>
+  `;
+}
+
+function nextHabit(){
+  if(habitIndex < HABIT_BUILDER_LIST.length-1){
+    habitIndex++;
+    renderHabitCard();
   }
+}
 
-  Object.defineProperty(window, "openHabit", {
-    value: renderHabitOverlay,
-    writable: false,      // ⛔️ قابل overwrite نیست
-    configurable: false, // ⛔️ قابل redefine نیست
+function prevHabit(){
+  if(habitIndex>0){
+    habitIndex--;
+    renderHabitCard();
+  }
+}
+function open21Challenge(){
+  cardArea.innerHTML = `
+    <div class="question-card">
+      <div class="question-text">🏆 چالش ۲۱ روزه</div>
+
+      ${programSubBtn("هفته اول — شروع و فعال‌سازی","openWeek1","#ff9966,#ff5e62")}
+      ${programSubBtn("هفته دوم — تثبیت و آگاهی","openWeek2","#00b09b,#96c93d")}
+      ${programSubBtn("هفته سوم — هویت‌سازی","openWeek3","#7f00ff,#e100ff")}
+
+      <button onclick="openHabit()" style="${backBtnStyle()}">
+        ⬅ بازگشت
+      </button>
+    </div>
+  `;
+}
+const WEEK1 = [
+"روز ۱: امروز فقط یک عادت کوچک انتخاب می‌کنم و متعهد می‌شوم ۲۱ روز ادامه‌اش بدهم.",
+"روز ۲: امروز کار مهمم را قبل از چک کردن گوشی انجام می‌دهم.",
+"روز ۳: امروز ۱۰ دقیقه مطالعه یا یادگیری انجام می‌دهم.",
+"روز ۴: امروز ۵ دقیقه افکارم را می‌نویسم.",
+"روز ۵: امروز حداقل ۱۰ دقیقه بدنم را حرکت می‌دهم.",
+"روز ۶: امروز یک کار نیمه‌تمام کوچک را کامل می‌کنم.",
+"روز ۷: امروز ۳ مورد از چیزهایی که بابتشان شکرگزارم را می‌نویسم."
+];
+
+function openWeek1(){
+  renderWeek("هفته اول — شروع و فعال‌سازی (روزهای ۱ تا ۷)",
+             "هدف هفته اول: فقط «شروع کردن و انجام دادن» بدون وسواس.",
+             WEEK1,
+             open21Challenge);
+}
+function renderWeek(title,goal,days,backFn){
+  let html = `
+    <div class="question-card">
+      <div class="question-text">${title}</div>
+      <div class="blink-goal">${goal}</div>
+  `;
+
+  days.forEach((d,i)=>{
+    html+=`
+      <div onclick="renderDay('${d.replace(/'/g,"")}','${title}',${backFn.name})"
+        style="margin-top:10px;padding:10px;border-radius:12px;background:#f4f4f4;cursor:pointer">
+        ${d.split(":")[0]}
+      </div>
+    `;
   });
 
-  console.log("✅ openHabit LOCKED successfully");
+  html+=`
+      <button onclick="${backFn.name}()" style="${backBtnStyle()}">
+        ⬅ بازگشت
+      </button>
+    </div>
+  `;
+
+  cardArea.innerHTML=html;
+}
+function renderDay(text,weekTitle,backFnName){
+  cardArea.innerHTML=`
+    <div class="question-card">
+      <div class="question-text">${text}</div>
+
+      <button onclick="${backFnName}()" style="${backBtnStyle()}">
+        ⬅ بازگشت به ${weekTitle}
+      </button>
+
+      <button onclick="startProgram()" style="${backBtnStyle()}">
+        🏠 منوی اصلی
+      </button>
+    </div>
+  `;
+}
 })();
