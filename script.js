@@ -542,188 +542,238 @@ button {
 `;
   document.head.appendChild(style);
 })();
-/*********************************
- * ✅ HABIT BUILDER – FINAL PATCH
- *********************************/
-(function () {
+/*******************************************************
+ 🧠 PATCH: Habit Builder Section (عادت‌ساز)
+  سازگار با نسخه فعلی برنامه و بدون تداخل با بخش‌های دیگر
+  Author: [نینجا]
+*******************************************************/
+(() => {
+  console.log("⚡ Forcing openHabit override...");
 
-  const HABITS = [
-    "من هر روز حتی با قدم‌های کوچک جلو می‌روم.",
-    "من شروع کردن را به کامل بودن ترجیح می‌دهم.",
-    "من با تکرار، عادت‌هایم را می‌سازم.",
-    "من به جای انگیزه، روی تعهد تکیه می‌کنم.",
-    "من برای زمانم ارزش قائلم.",
-    "من هر روز یک کار کوچک مهم انجام می‌دهم.",
-    "من به بدنم حرکت می‌دهم.",
-    "من افکارم را می‌نویسم تا ذهنم سبک شود.",
-    "من حواس‌پرتی‌ها را مدیریت می‌کنم.",
-    "من به مسیرم متعهد می‌مانم."
-  ];
-
-  const WEEKS = {
-    1: {
-      title: "هفته اول — شروع",
-      goal: "🎯 فقط شروع کن، حتی ناقص",
-      days: [
-        "روز ۱: انتخاب عادت اصلی",
-        "روز ۲: انجام ۵ دقیقه‌ای",
-        "روز ۳: حذف یک حواس‌پرتی",
-        "روز ۴: تکرار بدون قضاوت",
-        "روز ۵: ثبت تجربه",
-        "روز ۶: ادامه حتی با بی‌حوصلگی",
-        "روز ۷: مرور هفته"
-      ]
-    },
-    2: {
-      title: "هفته دوم — تثبیت",
-      goal: "🎯 استمرار مهم‌تر از شدت",
-      days: [
-        "روز ۸: انجام آگاهانه",
-        "روز ۹: زمان ثابت",
-        "روز ۱۰: حذف بهانه",
-        "روز ۱۱: ساده‌سازی",
-        "روز ۱۲: تمرکز عمیق",
-        "روز ۱۳: پاداش کوچک",
-        "روز ۱۴: مرور پیشرفت"
-      ]
-    },
-    3: {
-      title: "هفته سوم — هویت",
-      goal: "🎯 من کسی هستم که این عادت را دارد",
-      days: [
-        "روز ۱۵: هویت‌سازی",
-        "روز ۱۶: مسئولیت‌پذیری",
-        "روز ۱۷: انجام سخت",
-        "روز ۱۸: ثبات",
-        "روز ۱۹: بازنویسی باور",
-        "روز ۲۰: تصویر آینده",
-        "روز ۲۱: تثبیت نهایی"
-      ]
+  // پاکسازی هر تعریف قبلی
+  window.openHabit = function openHabit() {
+    console.log("✅ openHabit override active");
+    const app = document.getElementById("app");
+    if (!app) {
+      console.warn("⚠️ عنصر اصلی #app پیدا نشد. عادت‌ساز قابل نمایش نیست.");
+      return;
     }
-  };
 
-  let habitIndex = 0;
-
-  /******** OVERRIDE openHabit ********/
-  window.openHabit = function () {
-    cardArea.innerHTML = `
-      <div class="question-card">
-        <div class="question-text">🔥 عادت‌ساز</div>
-
-        ${programSubBtn("📘 مقدمه عادت‌ها", "openHabitIntro", "#ff7a18,#ffb347")}
-        ${programSubBtn("💪 عادت‌ساز (جملات)", "startHabitCards", "#56ab2f,#a8e063")}
-        ${programSubBtn("🗓 چالش ۲۱ روزه", "openHabitChallenge", "#8360c3,#2ebf91")}
-
-        <button onclick="startProgram()" style="${backBtnStyle()}">
-          ⬅ بازگشت
-        </button>
+    // پاکسازی صفحه
+    app.innerHTML = "";
+    
+    // منوی اصلی عادت‌ساز
+    const menu = document.createElement("div");
+    menu.className = "habit-menu";
+    menu.innerHTML = `
+      <h2 class="habit-title">🌱 بخش عادت‌ساز</h2>
+      <div class="habit-cards">
+        <button class="habit-card" id="roleHabitsBtn">📖 نقش عادت‌ها در زندگی</button>
+        <button class="habit-card" id="builderBtn">💪 عادت‌ساز</button>
+        <button class="habit-card" id="challengeBtn">🗓 چالش ۲۱ روزه ایجاد عادت</button>
       </div>
+      <button class="back-btn" onclick="showMainMenu()">بازگشت به منوی اصلی</button>
     `;
-  };
+    app.appendChild(menu);
 
-  window.openHabitIntro = function () {
-    cardArea.innerHTML = `
-      <div class="question-card">
-        <div class="question-text">📘 چرا عادت‌ها مهم‌اند؟</div>
-        <p style="margin-top:12px;line-height:1.9">
-          عادت‌های کوچک روزانه، در بلندمدت زندگی ما را می‌سازند.
-          تمرکز روی استمرار، کلید تغییر پایدار است.
-        </p>
-        <button onclick="openHabit()" style="${backBtnStyle()}">⬅ بازگشت</button>
-      </div>
-    `;
-  };
-
-  window.startHabitCards = function () {
-    habitIndex = 0;
-    renderHabit();
-  };
-
-  function renderHabit() {
-    cardArea.innerHTML = `
-      <div class="question-card">
-        <div class="question-number">
-          عادت ${habitIndex + 1} از ${HABITS.length}
+    //--------------------[۱] نقش عادت‌ها در زندگی --------------------
+    document.getElementById("roleHabitsBtn").onclick = () => {
+      app.innerHTML = `
+        <div class="habit-section">
+          <h3>📖 نقش عادت‌ها در زندگی</h3>
+          <p>عادات کوچک زندگی ما را می‌سازند. هر انتخاب روزانه به شکل‌گیری مسیر آینده منجر می‌شود. 
+          با ساخت عادات درست، نیازی به انگیزه دائمی نداریم — کارها به بخشی از هویت ما تبدیل می‌شوند.</p>
+          <p>با ساخت عادت‌های آگاهانه، مسیر موفقیت آرام و بدون فشار خواهد بود.</p>
+          <button class="back-btn" onclick="openHabit()">بازگشت</button>
+          <button class="back-btn" onclick="showMainMenu()">منوی اصلی</button>
         </div>
-        <div class="question-text" style="margin-top:14px">
-          ${HABITS[habitIndex]}
-        </div>
+      `;
+    };
 
-        <button onclick="nextHabit()" style="${mainBtnStyle()}">
-          💪 من می‌تونم
-        </button>
-        <button onclick="prevHabit()" style="${backBtnStyle()}">
-          ⬅ قبلی
-        </button>
-        <button onclick="openHabit()" style="${backBtnStyle()}">
-          🏠 منوی عادت‌ساز
-        </button>
-      </div>
-    `;
-  }
+    //--------------------[۲] کارت‌های جملات الهام‌بخش --------------------
+    document.getElementById("builderBtn").onclick = () => {
+      const quotes = [
+        "من هر روز حتی با قدم‌های کوچک به سمت بهتر شدن حرکت می‌کنم.",
+        "من شروع کردن را به کامل بودن ترجیح می‌دهم.",
+        "من به جای انتظار برای انگیزه، با عمل کردن انگیزه می‌سازم.",
+        "من برای زمانم ارزش قائلم و آن را آگاهانه خرج می‌کنم.",
+        "من عادت‌های کوچکی می‌سازم که آینده بزرگی برایم می‌آفرینند.",
+        "من مراقبت از جسم و ذهنم را جزو اولویت‌های زندگی‌ام می‌دانم.",
+        "من هر روز چیزی جدید یاد می‌گیرم، حتی اگر بسیار کوچک باشد.",
+        "من کارهای مهمم را قبل از کارهای آسان انجام می‌دهم.",
+        "من با تکرار روزانه، مهارت‌هایم را عمیق‌تر می‌کنم.",
+        "من افکارم را می‌نویسم تا ذهنم شفاف‌تر شود.",
+        "من برای داشته‌هایم قدردانم و این حس را هر روز تمرین می‌کنم.",
+        "من بدنم را هر روز به حرکت وادار می‌کنم تا انرژی داشته باشم.",
+        "من محیط اطرافم را مرتب نگه می‌دارم تا ذهنم آرام بماند.",
+        "من شب‌ها برای فردایم برنامه ساده و واضح می‌نویسم.",
+        "من به جای مقایسه خودم با دیگران، پیشرفت خودم را می‌سنجم.",
+        "من روی کارهایی تمرکز می‌کنم که واقعاً در زندگی‌ام اثر دارند.",
+        "من استراحت کافی را بخشی از موفقیتم می‌دانم.",
+        "من با انجام کارهای کوچک اما مداوم، اعتماد به نفسم را می‌سازم.",
+        "من به خودم فرصت اشتباه و یادگیری می‌دهم.",
+        "من هر روز نسخه آگاهانه‌تر و قوی‌تری از خودم می‌شوم.",
+      ];
 
-  window.nextHabit = function () {
-    if (habitIndex < HABITS.length - 1) {
-      habitIndex++;
-      renderHabit();
-    }
-  };
+      let index = 0;
 
-  window.prevHabit = function () {
-    if (habitIndex > 0) {
-      habitIndex--;
-      renderHabit();
-    }
-  };
-
-  window.openHabitChallenge = function () {
-    cardArea.innerHTML = `
-      <div class="question-card">
-        <div class="question-text">🗓 چالش ۲۱ روزه</div>
-        ${programSubBtn("هفته اول", "openHabitWeek(1)", "#ff7a18,#ffb347")}
-        ${programSubBtn("هفته دوم", "openHabitWeek(2)", "#f7971e,#ffd200")}
-        ${programSubBtn("هفته سوم", "openHabitWeek(3)", "#8360c3,#2ebf91")}
-        <button onclick="openHabit()" style="${backBtnStyle()}">⬅ بازگشت</button>
-      </div>
-    `;
-  };
-
-  window.openHabitWeek = function (w) {
-    const week = WEEKS[w];
-    cardArea.innerHTML = `
-      <div class="question-card">
-        <div class="question-text">${week.title}</div>
-        <div style="margin:10px 0;font-weight:bold;color:#ff7a18">
-          ${week.goal}
-        </div>
-        ${week.days.map(d => `<div style="margin-top:8px">${d}</div>`).join("")}
-        <button onclick="openHabitChallenge()" style="${backBtnStyle()}">
-          ⬅ بازگشت
-        </button>
-      </div>
-    `;
-  };
-
-})();
-// ✅ Force ensure openHabit overrides after all scripts loaded
-window.addEventListener("load", () => {
-  if (typeof window.__habitOverrideDone === "undefined") {
-    window.__habitOverrideDone = true;
-    console.log("⚡ Forcing openHabit override...");
-    window.openHabit = (function () {
-      const cardArea = document.getElementById("card-area");
-      return function () {
-        cardArea.innerHTML = `
-          <div class="question-card">
-            <div class="question-text">🔥 عادت‌ساز</div>
-            ${programSubBtn("📘 مقدمه عادت‌ها", "openHabitIntro", "#ff7a18,#ffb347")}
-            ${programSubBtn("💪 عادت‌ساز (جملات)", "startHabitCards", "#56ab2f,#a8e063")}
-            ${programSubBtn("🗓 چالش ۲۱ روزه", "openHabitChallenge", "#8360c3,#2ebf91")}
-            <button onclick="startProgram()" style="${backBtnStyle()}">⬅ بازگشت</button>
+      const renderCard = () => {
+        app.innerHTML = `
+          <div class="quote-card">
+            <h3>💪 جمله ${index + 1} از ${quotes.length}</h3>
+            <p>${quotes[index]}</p>
+            <div class="quote-buttons">
+              <button ${index === 0 ? "disabled" : ""} id="prevQuote">⬅️ قبلی</button>
+              <button id="nextQuote">${
+                index === quotes.length - 1 ? "🔁 پایان / منوی اصلی" : "من می‌تونم ➡️"
+              }</button>
+            </div>
+            <button class="back-btn" onclick="openHabit()">بازگشت به فهرست جملات</button>
+            <button class="back-btn" onclick="showMainMenu()">🏠 منوی اصلی</button>
           </div>
         `;
-      }
-    })();
-    console.log("✅ openHabit override active");
-  }
-});
+
+        document.getElementById("prevQuote").onclick = () => {
+          if (index > 0) {
+            index--;
+            renderCard();
+          }
+        };
+
+        document.getElementById("nextQuote").onclick = () => {
+          if (index < quotes.length - 1) {
+            index++;
+            renderCard();
+          } else {
+            openHabit(); // پایان -> بازگشت به منوی اصلی عادت‌ساز
+          }
+        };
+      };
+
+      renderCard();
+    };
+
+    //--------------------[۳] چالش ۲۱ روزه --------------------
+    document.getElementById("challengeBtn").onclick = () => {
+      renderChallengeMenu();
+    };
+
+    function renderChallengeMenu() {
+      app.innerHTML = `
+        <div class="challenge-menu">
+          <h3>🗓 چالش ۲۱ روزه ایجاد عادت</h3>
+          <div class="habit-cards">
+            <button id="week1Btn">💥 هفته اول — شروع و فعال‌سازی</button>
+            <button id="week2Btn">🌿 هفته دوم — تثبیت و آگاهی</button>
+            <button id="week3Btn">🔥 هفته سوم — هویت‌سازی</button>
+          </div>
+          <button class="back-btn" onclick="openHabit()">بازگشت</button>
+          <button class="back-btn" onclick="showMainMenu()">منوی اصلی</button>
+        </div>
+      `;
+
+      document.getElementById("week1Btn").onclick = () =>
+        renderWeek(
+          "💥 هفته اول — شروع و فعال‌سازی (روزهای ۱ تا ۷)",
+          "✨ هدف: فقط «شروع کردن و انجام دادن» بدون وسواس ✨",
+          [
+            "امروز فقط یک عادت کوچک انتخاب می‌کنم و متعهد می‌شوم ۲۱ روز ادامه‌اش بدهم.",
+            "امروز کار مهمم را قبل از چک کردن گوشی انجام می‌دهم.",
+            "امروز ۱۰ دقیقه مطالعه یا یادگیری انجام می‌دهم.",
+            "امروز ۵ دقیقه افکارم را می‌نویسم.",
+            "امروز حداقل ۱۰ دقیقه بدنم را حرکت می‌دهم.",
+            "امروز یک کار نیمه‌تمام کوچک را کامل می‌کنم.",
+            "امروز ۳ مورد از چیزهایی که بابتشان شکرگزارم را می‌نویسم.",
+          ]
+        );
+
+      document.getElementById("week2Btn").onclick = () =>
+        renderWeek(
+          "🌿 هفته دوم — تثبیت و آگاهی (روزهای ۸ تا ۱۴)",
+          "🌱 هدف: «پایداری و خودآگاهی» 🌱",
+          [
+            "امروز محیط اطرافم را ۱۰ دقیقه مرتب می‌کنم.",
+            "امروز آگاهانه‌تر غذا می‌خورم و عجله نمی‌کنم.",
+            "امروز یک حواس‌پرتی رایج را کمتر می‌کنم.",
+            "امروز یک مهارت کوچک مرتبط با هدفم تمرین می‌کنم.",
+            "امروز قبل از خواب، فردایم را در ۳ خط برنامه‌ریزی می‌کنم.",
+            "امروز به جای کمال‌گرایی، نسخه ساده کار را انجام می‌دهم.",
+            "امروز پیشرفت دو هفته اخیرم را مرور و ثبت می‌کنم.",
+          ]
+        );
+
+      document.getElementById("week3Btn").onclick = () =>
+        renderWeek(
+          "🔥 هفته سوم — هویت‌سازی (روزهای ۱۵ تا ۲۱)",
+          "💫 هدف: «تبدیل رفتار به هویت» 💫",
+          [
+            "امروز خودم را فردی می‌بینم که این عادت را دارد و مطابق آن رفتار می‌کنم.",
+            "امروز یک کار دشوار اما مهم را شروع می‌کنم.",
+            "امروز ۱۵ دقیقه تمرکز عمیق روی یک کار انجام می‌دهم.",
+            "امروز به خودم بابت ادامه مسیر پاداش کوچک می‌دهم.",
+            "امروز یک باور محدودکننده را شناسایی و بازنویسی می‌کنم.",
+            "امروز تصور می‌کنم اگر این عادت را یک سال ادامه دهم، زندگی‌ام چگونه می‌شود.",
+            "امروز کل مسیر را مرور می‌کنم و تصمیم می‌گیرم این عادت را به سبک زندگی تبدیل کنم.",
+          ]
+        );
+    }
+
+    // تابع ساخت کارت‌های روزها در هر هفته
+    function renderWeek(title, goal, days) {
+      app.innerHTML = `
+        <div class="week-section">
+          <h3>${title}</h3>
+          <p class="blink-goal">${goal}</p>
+          <div class="habit-cards">
+            ${days
+              .map(
+                (d, i) =>
+                  `<button class="day-card" id="day${i}Btn">📅 روز ${i + 1}</button>`
+              )
+              .join("")}
+          </div>
+          <button class="back-btn" onclick="renderChallengeMenu()">بازگشت به منوی چالش‌ها</button>
+          <button class="back-btn" onclick="showMainMenu()">منوی اصلی</button>
+        </div>
+      `;
+
+      days.forEach((d, i) => {
+        document.getElementById(`day${i}Btn`).onclick = () => {
+          app.innerHTML = `
+            <div class="day-card-detail">
+              <h3>${title}</h3>
+              <p class="blink-goal">${goal}</p>
+              <h4>📅 روز ${i + 1}</h4>
+              <p>${d}</p>
+              <button class="back-btn" onclick="renderWeek('${title}','${goal.replace(/'/g,"\\'")}',${JSON.stringify(days).replace(/"/g,'&quot;')})">بازگشت به هفته</button>
+              <button class="back-btn" onclick="showMainMenu()">🏠 منوی اصلی</button>
+            </div>
+          `;
+        };
+      });
+    }
+  };
+
+  // ✅ استایل‌های اختصاصی (درصورت نبود)
+  const style = document.createElement("style");
+  style.textContent = `
+    .habit-menu, .habit-section, .quote-card, .challenge-menu, .week-section, .day-card-detail {
+      text-align: center;
+      direction: rtl;
+      padding: 20px;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    .habit-title { font-size: 1.6em; margin-bottom: 10px; }
+    .habit-cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 15px; }
+    .habit-card, .day-card { background: #e8f5e9; border: 1px solid #81c784; border-radius: 8px; padding: 10px 15px; cursor: pointer; transition: 0.3s; }
+    .habit-card:hover, .day-card:hover { background: #c8e6c9; }
+    .quote-card p { min-height: 80px; }
+    .quote-buttons button { margin: 5px; padding: 8px 12px; }
+    .back-btn { background: #fff3e0; border: 1px solid #ffb74d; border-radius: 6px; margin: 6px; padding: 8px 14px; cursor: pointer; }
+    .back-btn:hover { background: #ffe0b2; }
+    .blink-goal { color: #ff7043; animation: blink 1s infinite; font-weight: bold; margin-bottom: 10px; }
+    @keyframes blink { 50% { opacity: 0.4; } }
+    @keyframes fadeIn { from { opacity }
+  `;
+  document.head.appendChild(style);
+})();
