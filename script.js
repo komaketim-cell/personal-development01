@@ -975,3 +975,63 @@ button {
     document.body.appendChild(overlay);
   };
 })();
+/*******************************************************
+ 🔒 LOCKED Habit Patch (Override-proof)
+*******************************************************/
+(() => {
+  console.log("🔒 LOCKED Habit patch loaded");
+
+  function renderHabitOverlay() {
+    const old = document.getElementById("habit-overlay");
+    if (old) old.remove();
+
+    const overlay = document.createElement("div");
+    overlay.id = "habit-overlay";
+    overlay.style.cssText = `
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      direction: rtl;
+      font-family: sans-serif;
+    `;
+
+    const box = document.createElement("div");
+    box.style.cssText = `
+      background: #f1fff4;
+      padding: 25px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 420px;
+      text-align: center;
+      border: 4px solid #4caf50;
+    `;
+
+    box.innerHTML = `
+      <h2>🌱 عادت‌ساز</h2>
+      <p>✅ اگر این را می‌بینی، override قفل شده است</p>
+
+      <button onclick="alert('نقش عادت‌ها')">📖 نقش عادت‌ها</button><br><br>
+      <button onclick="alert('عادت ساز')">💪 عادت‌ساز</button><br><br>
+      <button onclick="alert('چالش ۲۱ روزه')">🗓 چالش ۲۱ روزه</button><br><br>
+
+      <button onclick="document.getElementById('habit-overlay').remove()">
+        ❌ بستن
+      </button>
+    `;
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+  }
+
+  Object.defineProperty(window, "openHabit", {
+    value: renderHabitOverlay,
+    writable: false,      // ⛔️ قابل overwrite نیست
+    configurable: false, // ⛔️ قابل redefine نیست
+  });
+
+  console.log("✅ openHabit LOCKED successfully");
+})();
