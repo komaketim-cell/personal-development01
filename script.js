@@ -460,77 +460,85 @@ function prevGratitude() {
     renderGratitudeCard();
   }
 }
-/*************************
- * 🔒 BELIEF PROGRESS PERSISTENCE (PATCH)
- *************************/
+/*********************************
+ * 🔒 BELIEF PROGRESS PERSISTENCE
+ *********************************/
 (function () {
-  const _startBeliefCards = startBeliefCards;
-  const _nextBelief = nextBelief;
+  const KEY = "beliefProgressIndex";
 
+  // هنگام ورود به کارت‌های باور
+  const _startBeliefCards = startBeliefCards;
   startBeliefCards = function () {
-    const saved = JSON.parse(localStorage.getItem("beliefProgress") || "{}");
-    beliefIndex = typeof saved.index === "number" ? saved.index : 0;
+    const saved = localStorage.getItem(KEY);
+    if (saved !== null) {
+      beliefIndex = Number(saved);
+    }
     _startBeliefCards();
   };
 
-  nextBelief = function () {
-    _nextBelief();
-    localStorage.setItem(
-      "beliefProgress",
-      JSON.stringify({ index: beliefIndex })
-    );
-  };
-})();
-/*************************
- * ✨ BUTTON PULSE EFFECT (PATCH)
- *************************/
-(function () {
-  document.addEventListener("click", e => {
-    const btn = e.target.closest("button");
-    if (!btn) return;
-
-    if (
-      btn.textContent.includes("من می‌تونم") ||
-      btn.textContent.includes("خدایا شکرت")
-    ) {
-      btn.classList.add("pulse-glow");
-      setTimeout(() => btn.classList.remove("pulse-glow"), 650);
+  // هر بار تغییر کارت
+  document.addEventListener("click", () => {
+    if (typeof beliefIndex === "number") {
+      localStorage.setItem(KEY, beliefIndex);
     }
   });
 })();
-/*************************
- * 🎨 FONT + ANIMATION STYLE (PATCH)
- *************************/
+/*********************************
+ * ✨ STRONG BUTTON ANIMATION
+ *********************************/
+(function () {
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+
+    btn.classList.remove("pulse-glow");
+    void btn.offsetWidth; // reset animation
+    btn.classList.add("pulse-glow");
+
+    setTimeout(() => {
+      btn.classList.remove("pulse-glow");
+    }, 700);
+  });
+})();
+/*********************************
+ * 🎨 FONT + VISUAL ENHANCEMENT
+ *********************************/
 (() => {
   const style = document.createElement("style");
   style.textContent = `
 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap');
 
-.question-card {
-  font-family: 'Vazirmatn', sans-serif;
-  letter-spacing: 0.2px;
+body,
+.question-card,
+.question-text,
+.result-row,
+button {
+  font-family: 'Vazirmatn', sans-serif !important;
+}
+
+.question-text {
+  font-size: 16.5px;
+  line-height: 1.9;
 }
 
 .pulse-glow {
-  animation: pulseGlow .65s ease;
+  animation: pulseGlow .7s ease;
 }
 
 @keyframes pulseGlow {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 0 rgba(255,180,0,0);
+    box-shadow: 0 0 0 rgba(255,170,0,0);
   }
   50% {
     transform: scale(1.12);
-    box-shadow: 0 0 18px rgba(255,180,0,.85);
+    box-shadow: 0 0 20px rgba(255,170,0,.85);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 rgba(255,180,0,0);
+    box-shadow: 0 0 0 rgba(255,170,0,0);
   }
 }
 `;
   document.head.appendChild(style);
 })();
-console.log("✅ PATCH LOADED");
-alert("PATCH LOADED");
