@@ -72,6 +72,7 @@ const DIMENSIONS = {
  *************************/
 let currentQuestion = 0;
 let answers = [];
+let gratitudeIndex = 0;
 
 /*************************
  * DOM
@@ -252,7 +253,7 @@ const openWill       = () => showSection("💪 تقویت اراده","تمری�
 const openBelief     = () => showSection("🧠 اصلاح باورها","شناسایی و بازنویسی باورهای محدودکننده.");
 
 /*************************
- * ✅ GRATITUDE (UPGRADED)
+ * ✅ GRATITUDE (CARD‑BASED)
  *************************/
 const openGratitude = () => {
   cardArea.innerHTML = `
@@ -260,7 +261,7 @@ const openGratitude = () => {
       <div class="question-text">🙏 شکرگزاری</div>
 
       ${programSubBtn("📖 چرا شکرگزاری؟", "openWhyGratitude", "#8360c3,#2ebf91")}
-      ${programSubBtn("🤍 با هم شکرگزاری کنیم", "openGratitudePractice", "#56ab2f,#a8e063")}
+      ${programSubBtn("🤍 با هم شکرگزاری کنیم", "startGratitudeCards", "#56ab2f,#a8e063")}
 
       <button onclick="startProgram()" style="${backBtnStyle()}">
         ⬅ بازگشت
@@ -290,14 +291,10 @@ function openWhyGratitude() {
   cardArea.innerHTML = `
     <div class="question-card">
       <div class="question-text">📖 چرا شکرگزاری؟</div>
-
-      <div style="margin-top:12px; line-height:1.9">
-        <p>
-          شکرگزاری تمرینی قدرتمند برای افزایش آرامش،
-          رضایت درونی و حضور در لحظه حال است.
-        </p>
-      </div>
-
+      <p style="margin-top:12px; line-height:1.9">
+        شکرگزاری تمرینی قدرتمند برای افزایش آرامش،
+        رضایت درونی و حضور در لحظه حال است.
+      </p>
       <button onclick="openGratitude()" style="${backBtnStyle()}">
         ⬅ بازگشت
       </button>
@@ -305,32 +302,49 @@ function openWhyGratitude() {
   `;
 }
 
-function openGratitudePractice() {
-  const listHTML = GRATITUDE_LIST.map(item => `
-    <div style="
-      background:#f7f7f7;
-      border-radius:14px;
-      padding:12px;
-      margin-top:10px;
-      font-size:14px;
-    ">
-      ${item}
-    </div>
-  `).join("");
+function startGratitudeCards() {
+  gratitudeIndex = 0;
+  renderGratitudeCard();
+}
 
+function renderGratitudeCard() {
   cardArea.innerHTML = `
     <div class="question-card">
-      <div class="question-text">🤍 با هم شکرگزاری کنیم</div>
-
-      <div style="max-height:320px; overflow-y:auto; margin-top:12px">
-        ${listHTML}
+      <div class="question-number">
+        شکرگزاری ${gratitudeIndex + 1} از ${GRATITUDE_LIST.length}
       </div>
 
-      <button onclick="openGratitude()" style="${backBtnStyle()}">
-        ⬅ بازگشت
+      <div class="question-text" style="margin-top:14px">
+        ${GRATITUDE_LIST[gratitudeIndex]}
+      </div>
+
+      <button onclick="nextGratitude()" style="${mainBtnStyle()}">
+        🤍 خدایا شکرت
+      </button>
+
+      <button onclick="prevGratitude()" style="${backBtnStyle()}">
+        ⬅ قبلی
+      </button>
+
+      <button onclick="startProgram()" style="${backBtnStyle()}">
+        🏠 منوی اصلی
       </button>
     </div>
   `;
+}
+
+function nextGratitude() {
+  if (gratitudeIndex < GRATITUDE_LIST.length - 1) {
+    gratitudeIndex++;
+    renderGratitudeCard();
+  }
+}
+
+function prevGratitude() {
+  if (gratitudeIndex > 0) {
+    gratitudeIndex--;
+    renderGratitudeCard();
+  }
 }
 
 /*************************
