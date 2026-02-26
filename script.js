@@ -705,3 +705,25 @@ button {
   };
 
 })();
+// ✅ Force ensure openHabit overrides after all scripts loaded
+window.addEventListener("load", () => {
+  if (typeof window.__habitOverrideDone === "undefined") {
+    window.__habitOverrideDone = true;
+    console.log("⚡ Forcing openHabit override...");
+    window.openHabit = (function () {
+      const cardArea = document.getElementById("card-area");
+      return function () {
+        cardArea.innerHTML = `
+          <div class="question-card">
+            <div class="question-text">🔥 عادت‌ساز</div>
+            ${programSubBtn("📘 مقدمه عادت‌ها", "openHabitIntro", "#ff7a18,#ffb347")}
+            ${programSubBtn("💪 عادت‌ساز (جملات)", "startHabitCards", "#56ab2f,#a8e063")}
+            ${programSubBtn("🗓 چالش ۲۱ روزه", "openHabitChallenge", "#8360c3,#2ebf91")}
+            <button onclick="startProgram()" style="${backBtnStyle()}">⬅ بازگشت</button>
+          </div>
+        `;
+      }
+    })();
+    console.log("✅ openHabit override active");
+  }
+});
